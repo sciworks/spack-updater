@@ -48,7 +48,7 @@ def main():
             v = "https://github.com/%s" % v
         if env_file:
             with open(env_file, "a") as fd:
-                fd.write("spack_updater_%s=%s\n")
+                fd.write("spack_updater_%s=%s\n" % (k.lower(), v))
         print('"spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
 
 
