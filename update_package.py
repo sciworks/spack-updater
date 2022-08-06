@@ -80,6 +80,7 @@ class SpackChangeRequest:
     def data(self):
         data = copy.deepcopy(self.request)
         data["repo"] = self.from_repo
+        data['package'] = self.package
         if self.from_branch:
             data["branch"] = self.from_branch
         return data
