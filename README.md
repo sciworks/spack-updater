@@ -39,7 +39,7 @@ still builds. This can be done with the [pakages spack builder](https://syspack.
 ### GitHub Actions
 
 We recommend that you add a `package-update` label to your repository running the action,
-mostly for organizational purposes.
+and the spack upstream, mostly for organizational purposes.
 
 ![img/label.png](img/label.png)
 
