@@ -1,0 +1,51 @@
+name: "spack updater action"
+description: "Given a local spack repository, compare a package to upstream spack and pull request appropriately."
+inputs:
+  package:
+    description: package in local repo to check
+    required: true
+  token:
+    default: token authenticate to GitHub to PR
+    required: true
+  pull_request:
+    description: given changes, attempt to do a pull request
+    default: false
+  branch:
+    description: upstream branch to open issue to request update (defaults to develop)
+    default: ""
+  upstream:
+    description: upstream to open issue to request update (defaults to spack)
+    default: ""
+  repo:
+    description: local repository with recipes (defaults to PWD)
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Dependencies
+      shell: bash
+      run: pip install -r requirements.txt
+
+    - name: Build Package
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        repo: ${{ inputs.repo }}
+        branch: ${{ inputs.branch }}
+        upstream: ${{ inputs.upstream }}
+        package: ${{ inputs.package }}
+        pull_request: ${{ inputs.pull_request }}
+      run: |
+          cmd="python update_package.py --repo ${repo} ${package}"
+          if [[ "${upstream}" != "" ]]; then
+              cmd="${cmd} --upstream ${upstream}"
+          fi
+          if [[ "${branch}" != "" ]]; then
+              cmd="${cmd} --branch ${branch}"
+          fi
+          if [[ "${pull_request}" == "true" ]]; then
+              cmd="${cmd} --pull_request"
+          fi
+          echo ${cmd}
+          $cmd
+      shell: bash
