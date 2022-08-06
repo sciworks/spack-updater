@@ -19,6 +19,11 @@ We can't do a pull request to a different repository programatically without a
 personal access token, which @vsoch doesn't like to provide, even scoped.
 
 Thus, the way we are going to do the pull request is a bit of a trick, and manually done.
+The workflow will be intended to be run on a merge to a main branch, and when it detects
+changes, it will open an issue on itself (we cannot open issues on other repos)
+that will provide a link for a human to open the issue, and opening the issue
+on the subsequent repository will trigger the building workflow.
+
 Given that the pull request trigger detects a changed workflow, we comment
 back to the pull request a link to open a pull request to the upstream that will
 trigger a workflow there to do the update.
@@ -33,12 +38,20 @@ still builds. This can be done with the [pakages spack builder](https://syspack.
 
 ### GitHub Actions
 
+We recommend that you add a `package-update` label to your repository running the action,
+mostly for organizational purposes.
+
+![img/label.png](img/label.png)
+
+You then typically want to run this on a merge to a main branch, and after you've determined
+that the recipe builds and is good to update to the upstream.
+
 ```yaml
 name: Update Spack
 on:
-  pull_request: []
-   schedule:
-    - cron:  '0 2 * * *' 
+  push:
+    branches:
+     - main
 
   jobs:
     test-action:
@@ -58,6 +71,9 @@ on:
             branch: develop
             pull_request: true
 ```
+
+In the above, asking for the pull_request will actually open an issue with
+a link for you to click to start the process.
 
 ### Testing
 

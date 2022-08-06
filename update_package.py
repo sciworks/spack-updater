@@ -85,15 +85,21 @@ class SpackChangeRequest:
 
     def submit(self):
         """
-        Submit an update or new package request by opening an issue
+        Submit an update or new package request by opening an issue on our own repo
         """
-        title = "[package-updater] request to update %s" % self.package
-        to_repo = "/".join(self.to_repo.strip("/").split("/")[3:])
+        title = "[package-update] request to update %s" % self.package
         body = "This is a request for an automated package update.\n\n" + yaml.dump(
             self.data
         )
         print(f"Title: {title}")
         print(body)
+
+        # This is the url we assemble that will be provided in the issue to trigger an update workflow
+        update_url = f"{self.to_repo}/issues/new?labels=package-uopdate&title={title}&body={body}"
+
+        # Now update the body to include this link!
+        body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
+        body += " - [Click here to request the update](%s)" % update_url
 
         # prepare the message
         if not self.from_repo:
@@ -113,7 +119,7 @@ class SpackChangeRequest:
 
         # Show url to user
         res = response.json()
-        print("Opened issue:\n%s" % res["html_url"])
+        print("Opened request issue:\n%s" % res["html_url"])
 
     def populate_new_package(self, package_path):
         """
