@@ -32,7 +32,18 @@ TLDR: This should ensure that local changes to a package.py file and associated 
 are generally synced. It's recommended to do this in unision with ensuring the package
 still builds. This can be done with the [pakages spack builder](https://syspack.github.io/pakages/).
 
-**under development**
+### Example
+
+When:
+
+ 1. [this issue was opened](https://github.com/researchapps/spack/issues/2) on a merge of the test package here
+ 2. [it triggered this workflow](https://github.com/researchapps/spack/runs/7708080894?check_suite_focus=true)
+ 3. [which opened this pull request](https://github.com/researchapps/spack/pull/4)
+
+Note that the pull request links to the issue so it is properly closed when the pull request is merged.
+The workflow used to perform the workflow on the original issue opened is provided under [.github/example-package-request.yaml](.github/example-package-request.yaml). This means to get it working for your spack,
+you'll need to add that workflow, and ensure your action targets the repository you add it to
+as the upstream.
 
 ## Usage
 
