@@ -4,7 +4,7 @@ The spack updater is intended to target a local package.py recipe of interest,
 and compare it for differences with upstream spack.
 
 1. If the files differ and the upstream is changed more recent, a PR is done to the branch here for it.
-2. If the files differ and the local change is more recent, a PR is done to spack.
+2. If the files differ and the local change is more recent, a PR is done to spack. See below for how this is done.
 3. The same is applied for changes to associates files in the package directory.
 
 We can also detect the cases where a package is newly added to spack or the repository.
@@ -13,10 +13,15 @@ it was actually added locally or deleted upstream, we instead take a more conser
 approach to just look for changes in the files. E.g., any deletion/addition of a supplementary
 file usually means an update to the package.py.
 
-Note that this works by opening an issue with metadata about the change to spack,
-and then spack having an underlying workflow that triggers. We cannot do that
-from the calling repository unless there is a personal access token, which
-@vsoch doesn't like to provide, even scoped.
+### How do we update to spack?
+
+We can't do a pull request to a different repository programatically without a
+personal access token, which @vsoch doesn't like to provide, even scoped.
+
+Thus, the way we are going to do the pull request is a bit of a trick, and manually done.
+Given that the pull request trigger detects a changed workflow, we comment
+back to the pull request a link to open a pull request to the upstream that will
+trigger a workflow there to do the update.
 
 TLDR: This should ensure that local changes to a package.py file and associated assets
 are generally synced. It's recommended to do this in unision with ensuring the package

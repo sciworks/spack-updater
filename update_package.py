@@ -99,7 +99,7 @@ class SpackChangeRequest:
         if not self.from_repo:
             return
 
-        url = "https://api.github.com/repos/%s/issues" % to_repo
+        url = "https://api.github.com/repos/%s/issues" % self.from_repo
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": "token %s" % token,
