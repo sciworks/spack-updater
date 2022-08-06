@@ -41,7 +41,7 @@ def main():
         return
     for k, v in values.items():
         if k == "repo" and not v.startswith("http"):
-            k = "https://github.com/%s" % v
+            v = "https://github.com/%s" % v
         print('"spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
 
 
