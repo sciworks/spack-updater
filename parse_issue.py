@@ -42,7 +42,7 @@ def main():
     for k, v in values.items():
         if k == "repo" and not v.startswith("http"):
             v = "https://github.com/%s" % v
-        print('"spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
+        print('echo "spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
 
 
 if __name__ == "__main__":
