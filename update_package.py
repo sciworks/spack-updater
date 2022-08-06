@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import random
-import re
-import json
-import requests
-import sys
-import subprocess
-import shutil
-import tempfile
 import copy
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import urllib.parse
+
+import requests
 import yaml
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -95,7 +96,9 @@ class SpackChangeRequest:
         print(body)
 
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
-        update_url = f"{self.to_repo}/issues/new?labels=package-uopdate&title={title}&body={body}"
+        update_url = urllib.parse.quote(
+            f"{self.to_repo}/issues/new?labels=package-update&title={title}&body={body}"
+        )
 
         # Now update the body to include this link!
         body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
