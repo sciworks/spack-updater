@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import sys
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(
+        description="Spack Updated Issue Parser",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument("issue_text", help="path to issue text file.")
+    return parser
+
+
+def main():
+
+    parser = get_parser()
+
+    # If an error occurs while parsing the arguments, the interpreter will exit with value 2
+    args, extra = parser.parse_known_args()
+
+    # Show args to the user
+    print("issue-txt: %s" % args.issue_text)
+    if not os.path.exists(args.issue_text):
+        sys.exit("File %s does not exist." % args.issue_text)
+    with open(args.issue_text, "r") as fd:
+        text = fd.read()
+
+    # Get a dict of values
+    values = {
+        xx.split(":", 1)[0].strip(): xx.split(":", 1)[-1].strip()
+        for xx in [x for x in text.split("\n") if ":" in x]
+    }
+    for k, v in values.items():
+        print('"spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
+
+
+if __name__ == "__main__":
+    main()
