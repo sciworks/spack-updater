@@ -88,7 +88,7 @@ class SpackChangeRequest:
         """
         Submit an update or new package request by opening an issue on our own repo
         """
-        title = "[package-update] request to update %s" % self.package
+        title = "[package-update]"
         body = "This is a request for an automated package update.\n\n" + yaml.dump(
             self.data
         )
@@ -96,8 +96,9 @@ class SpackChangeRequest:
         print(body)
 
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
-        params = urllib.parse.quote(f"title={title}&body={body}")
-        update_url = f"{self.to_repo}/issues/new?labels=package-update&{params}"
+        encoded_title = urllib.parse.quote(title)
+        encoded_body = urllib.parse.quote(body)
+        update_url = f"{self.to_repo}/issues/new?labels=package-update&title={encoded_title}&body={encoded_body}"
         print(update_url)
 
         # Now update the body to include this link!
