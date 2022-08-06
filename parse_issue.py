@@ -5,7 +5,8 @@ import os
 import sys
 
 # If we are in an issue, get title from environment
-title = os.environ.get('title')
+title = os.environ.get("title")
+
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -14,6 +15,9 @@ def get_parser():
     )
     parser.add_argument("issue_text", help="path to issue text file.")
     return parser
+
+
+env_file = os.getenv("GITHUB_ENV")
 
 
 def main():
@@ -35,14 +39,17 @@ def main():
         xx.split(":", 1)[0].strip(): xx.split(":", 1)[-1].strip()
         for xx in [x for x in text.split("\n") if ":" in x]
     }
-    
+
     # Exit early if we have a title and doesn't matach
     if title and "[package-update]" not in title:
         return
     for k, v in values.items():
         if k == "repo" and not v.startswith("http"):
             v = "https://github.com/%s" % v
-        print('echo "spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
+        if env_file:
+            with open(env_file, "a") as fd:
+                fd.write("spack_updater_%s=%s\n")
+        print('"spack_updater_%s=%s" >> $GITHUB_ENV' % (k.lower(), v))
 
 
 if __name__ == "__main__":
