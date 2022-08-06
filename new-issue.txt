@@ -1,0 +1,6 @@
+This is a request for an automated package update.
+
+action: update-package
+branch: 1/merge
+path: packages/zlib
+repo: sciworks/spack-updater

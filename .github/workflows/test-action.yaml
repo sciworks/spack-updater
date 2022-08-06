@@ -1,0 +1,28 @@
+name: Test Action
+on:
+  pull_request: []
+  push:
+    branches:
+      main
+
+jobs:
+  test-action:
+    name: Test Action Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Test Parse Issue
+        run: |
+          pip install -r requirements.txt
+          python parse_issue.py new-issue.txt
+      - name: Spack Update
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: .
+          package: zlib
+          upstream: https://github.com/vsoch/spack
+          branch: develop
+          pull_request: true

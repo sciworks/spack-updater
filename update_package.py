@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import random
-import re
-import json
-import requests
-import sys
-import subprocess
-import shutil
-import tempfile
 import copy
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import urllib.parse
+
+import requests
 import yaml
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -79,26 +80,37 @@ class SpackChangeRequest:
     def data(self):
         data = copy.deepcopy(self.request)
         data["repo"] = self.from_repo
+        data['package'] = self.package
         if self.from_branch:
             data["branch"] = self.from_branch
+        return data
 
     def submit(self):
         """
-        Submit an update or new package request by opening an issue
+        Submit an update or new package request by opening an issue on our own repo
         """
-        title = "[package-updater] request to update %s" % self.package
-        to_repo = "/".join(self.to_repo.strip("/").split("/")[3:])
+        title = "[package-update] request to update %s" % self.package
         body = "This is a request for an automated package update.\n\n" + yaml.dump(
             self.data
         )
         print(f"Title: {title}")
         print(body)
 
+        # This is the url we assemble that will be provided in the issue to trigger an update workflow
+        encoded_title = urllib.parse.quote(title)
+        encoded_body = urllib.parse.quote(body)
+        update_url = f"{self.to_repo}/issues/new?labels=package-update&title={encoded_title}&body={encoded_body}"
+        print(update_url)
+
+        # Now update the body to include this link!
+        body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
+        body += " - [Click here to request the update](%s)" % update_url
+
         # prepare the message
         if not self.from_repo:
             return
 
-        url = "https://api.github.com/repos/%s/issues" % to_repo
+        url = "https://api.github.com/repos/%s/issues" % self.from_repo
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": "token %s" % token,
@@ -112,7 +124,7 @@ class SpackChangeRequest:
 
         # Show url to user
         res = response.json()
-        print("Opened issue:\n%s" % res["html_url"])
+        print("Opened request issue:\n%s" % res["html_url"])
 
     def populate_new_package(self, package_path):
         """
