@@ -97,7 +97,7 @@ class SpackChangeRequest:
 
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
         params = urllib.parse.quote(f"title={title}&body={body}")
-        update_url = f"{self.to_repo}/issues/new?labels=package-update&{params}")
+        update_url = f"{self.to_repo}/issues/new?labels=package-update&{params}"
         print(update_url)
 
         # Now update the body to include this link!
