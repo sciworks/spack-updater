@@ -81,6 +81,7 @@ class SpackChangeRequest:
         data["repo"] = self.from_repo
         if self.from_branch:
             data["branch"] = self.from_branch
+        return data
 
     def submit(self):
         """
