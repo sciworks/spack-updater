@@ -158,7 +158,7 @@ class PackageDiffer:
         if not os.path.exists(package_dir):
             print(f"{package_dir} does not exist, will obtain from upstream...")
             spack_package = self.spack_package_dir(package_name)
-            shutil.copytree(package_dir, spack_package)
+            shutil.copytree(spack_package, package_dir)
         if not os.path.exists(package_file):
             sys.exit(
                 f"Package file {package_file} does not exist - not found in upstream or here!"
