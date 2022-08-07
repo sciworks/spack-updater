@@ -1,6 +1,8 @@
 name: Test Update From Spack
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+  schedule:
+    - cron: 0 2 * * 6
 
 jobs:
   test-action-from-spack:
