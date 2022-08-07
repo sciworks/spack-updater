@@ -85,7 +85,40 @@ on:
 ```
 
 In the above, asking for the pull_request will actually open an issue with
-a link for you to click to start the process.
+a link for you to click to start the process. You can also run this on a scheduled event,
+and this variant will look for changes in the spack remote packages. Thus, it's reccommended
+to run this action for pushes to main and on a schedule (without pull_request):
+
+
+```yaml
+name: Update Spack Package
+on:
+  schedule:
+    - cron:  '30 5,17 * * *'
+  push:
+    branches:
+      main
+
+jobs:
+  update-package:
+    name: Update Spack Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Test Adding New Package
+        uses: sciworks/spack-updater@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.actor }}
+          repo: .
+          package: m4
+          upstream: https://github.com/researchapps/spack
+          branch: develop
+          pull_request: ${{ github.event_name == 'push' }} 
+```
+
 
 ### Testing
 

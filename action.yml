@@ -4,6 +4,9 @@ inputs:
   package:
     description: package in local repo to check
     required: true
+  user:
+    default: username to open PR
+    required: true
   token:
     default: token authenticate to GitHub to PR
     required: true
