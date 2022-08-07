@@ -24,6 +24,13 @@ jobs:
           branch: develop
           pull_request: true
 
+      - name: Open Pull Request
+        if: ${{ env.open_pr != '' }}
+        uses: vsoch/pull-request-action@1.0.19
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: "main"
+
   test-action:
     name: Test Action Update To Spack
     runs-on: ubuntu-latest
