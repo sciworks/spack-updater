@@ -1,0 +1,58 @@
+name: Test Action
+on:
+  workflow_dispatch: 
+
+jobs:
+  test-action-from-spack:
+    name: Test New Package From Spack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Test Adding New Package
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: .
+          package: m4
+          upstream: https://github.com/researchapps/spack
+          branch: develop
+          pull_request: true
+
+      - name: Pull request changes
+        if: ${{ env.spack_updater_changes == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_AGAINST: main
+          package: m4
+          repo: .
+        run: |
+          printf "GitHub Actor: ${GITHUB_ACTOR}\n"
+          export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git branch
+          git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
+          git branch
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          repo_path=$(realpath "${repo}")
+          tree ${repo_path}
+          repo_path=${repo_path}/packages/${package}
+          git add $repo_path/*
+          if git diff-index --quiet HEAD --; then
+              printf "No changes\n"
+          else
+              printf "Changes\n"
+              git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')"
+              git push origin "${BRANCH_FROM}"
+              echo "open_pr=1" >> $GITHUB_ENV
+          fi
+          echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
+
+      - name: Open Pull Request
+        if: ${{ env.open_pr != '' }}
+        uses: vsoch/pull-request-action@1.0.19
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: "main"
