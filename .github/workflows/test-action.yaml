@@ -1,9 +1,6 @@
 name: Test Action
 on:
   pull_request: []
-  push:
-    branches:
-      main
 
 jobs:
   test-action:
@@ -27,7 +24,7 @@ jobs:
           package: zlib
           upstream: https://github.com/researchapps/spack
           branch: develop
-          pull_request: true
+          pull_request: false
           open_issue: false
 
   test-action-from-spack:
@@ -46,5 +43,5 @@ jobs:
           package: m4
           upstream: https://github.com/researchapps/spack
           branch: develop
-          pull_request: true
+          pull_request: false
           open_issue: false

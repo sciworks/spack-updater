@@ -72,7 +72,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
         BRANCH_AGAINST: ${{ inputs.local_branch }}
         package: ${{ inputs.package }}
-        repo: .
+        repo: ${{ inputs.repo }}
       run: |
           printf "GitHub Actor: ${GITHUB_ACTOR}\n"
           export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
