@@ -59,6 +59,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
         BRANCH_AGAINST: ${{ inputs.local_branch }}
         package: ${{ inputs.package }}
+      shell: bash
       run: |
           printf "GitHub Actor: ${GITHUB_ACTOR}\n"
           export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
@@ -83,6 +84,6 @@ runs:
       if: ${{ env.open_pr != '' }}
       uses: vsoch/pull-request-action@1.0.19
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.token }}
         PULL_REQUEST_BODY: ${{ env.PULL_REQUEST_BODY }}
-        PULL_REQUEST_BRANCH: "develop"
+        PULL_REQUEST_BRANCH: "${{ inputs.local_branch }}"
