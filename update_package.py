@@ -104,7 +104,8 @@ class SpackChangeRequest:
 
         # Now update the body to include this link!
         body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
-        body += " - [Click here to request the update](%s)" % update_url
+        body += " - [Click here to request the update](%s)\n\n" % update_url
+        body += "You can close this issue once you've clicked and opened the one above!"
 
         # prepare the message
         if not self.from_repo:
@@ -249,6 +250,9 @@ class PackageDiffer:
             to_filename = os.path.join(dst, basename)
             if os.path.exists(to_filename):
                 os.remove(to_filename)
+            dest_dir = os.path.dirname(to_filename)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
             shutil.copyfile(filename, to_filename)
 
     def clone(self, upstream, branch=None):
