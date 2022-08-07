@@ -1,4 +1,4 @@
-name: Test Action
+name: Test Update From Spack
 on:
   workflow_dispatch: 
 
@@ -52,7 +52,7 @@ jobs:
 
       - name: Open Pull Request
         if: ${{ env.open_pr != '' }}
-        uses: vsoch/pull-request-action@1.0.19
+        uses: vsoch/pull-request-action@1.0.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: "main"
