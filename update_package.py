@@ -54,8 +54,14 @@ def get_parser():
         default="https://github.com/vsoch/spack",
     )
     parser.add_argument(
+        "--open_issue",
+        help="Open an issue with a link to open a pull request to upstream.",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
         "--pull_request",
-        help="Try opening a pull request to consolidate changes.",
+        help="Open a pull request here with remote changes.",
         default=False,
         action="store_true",
     )
@@ -145,9 +151,10 @@ class PackageDiffer:
     Determine if a package is different and act accordingly.
     """
 
-    def __init__(self, repo, upstream, branch=None):
+    def __init__(self, repo, upstream, branch=None, pull_request=True):
         self.repo = os.path.abspath(repo)
         self.spack_root = self.clone(upstream, branch)
+        self.pull_request = pull_request
 
     def find_package(self, package_name):
         """
@@ -166,12 +173,12 @@ class PackageDiffer:
             )
         return package_dir
 
-    def set_changes(self):           
+    def set_changes(self):
         """
         Shared function to indicate to running action there are changes (for PR).
         """
         env_file = os.getenv("GITHUB_ENV")
-        if env_file:
+        if env_file and self.pull_request:
             with open(env_file, "a") as fd:
                 fd.write("spack_updater_changes=true\n")
 
@@ -310,14 +317,17 @@ def main():
 
     # Show args to the user
     print("pull_request: %s" % args.pull_request)
+    print("  open_issue: %s" % args.open_issue)
     print("    upstream: %s" % args.upstream)
     print("     package: %s" % args.package)
     print("      branch: %s" % args.branch)
     print("        repo: %s" % args.repo)
 
-    cli = PackageDiffer(args.repo, args.upstream, args.branch)
+    cli = PackageDiffer(
+        args.repo, args.upstream, args.branch, pull_request=args.pull_request
+    )
     request = cli.diff(args.package)
-    if request and args.pull_request:
+    if request and args.open_issue:
         request.submit()
     cli.cleanup()
 

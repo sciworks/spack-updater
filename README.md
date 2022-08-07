@@ -77,6 +77,7 @@ on:
           uses: sciworks/spack-updater@main
           with:
             token: ${{ secrets.GITHUB_TOKEN }}
+            user: ${{ github.actor }}
             repo: .
             package: zlib
             upstream: https://github.com/vsoch/spack
@@ -111,13 +112,25 @@ jobs:
         uses: sciworks/spack-updater@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.actor }}
           repo: .
           package: m4
           upstream: https://github.com/researchapps/spack
           branch: develop
-          pull_request: ${{ github.event_name == 'push' }} 
+
+          # Open a pull request to local here if there are remote changes
+          pull_request: ${{ github.event_name != 'push' }} 
+
+          # Open an issue with a link to trigger update workflow if local changes
+          open_issue: ${{ github.event_name == 'push' }} 
 ```
 
+Note that you can also customize the `upstream` repository (defaults to spack develop)
+and the local branch to PR against, given changes (defaults to main). See the [action.yml](action.yml)
+for full settings.
+
+**Important** for GitHub actions to be able to open a PR, this setting needs
+to be enabled in the repository or GitHub organization Action settings.
 
 ### Testing
 
@@ -129,6 +142,6 @@ $ python update_package.py zlib
 
 which is equivalent to:
 
-```
+```bash
 $ python update_package.py --repo . zlib
 ```
