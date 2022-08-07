@@ -70,14 +70,14 @@ runs:
           git config --global user.email "github-actions@users.noreply.github.com"
           git add var/spack/repos/builtin/packages/${package}/*
           if git diff-index --quiet HEAD --; then
-           printf "No changes\n"
-        else
-           printf "Changes\n"
-           git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')"
-           git push origin "${BRANCH_FROM}"
-           echo "open_pr=1" >> $GITHUB_ENV
-        fi
-        echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
+              printf "No changes\n"
+          else
+              printf "Changes\n"
+              git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')"
+              git push origin "${BRANCH_FROM}"
+              echo "open_pr=1" >> $GITHUB_ENV
+          fi
+          echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
 
     - name: Open Pull Request
       if: ${{ env.open_pr != '' }}
