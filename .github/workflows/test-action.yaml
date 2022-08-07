@@ -22,8 +22,29 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.actor }}
           repo: .
           package: zlib
           upstream: https://github.com/researchapps/spack
           branch: develop
           pull_request: true
+          open_issue: false
+
+  test-action-from-spack:
+    name: Test New Package From Spack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Test Adding New Package
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          user: ${{ github.actor }}
+          repo: .
+          package: m4
+          upstream: https://github.com/researchapps/spack
+          branch: develop
+          pull_request: true
+          open_issue: false
