@@ -7,7 +7,7 @@ on:
 
 jobs:
   test-action:
-    name: Test Action Update
+    name: Test Action Update To Spack
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -17,12 +17,13 @@ jobs:
         run: |
           pip install -r requirements.txt
           python parse_issue.py new-issue.txt
+
       - name: Spack Update
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repo: .
           package: zlib
-          upstream: https://github.com/vsoch/spack
+          upstream: https://github.com/researchapps/spack
           branch: develop
           pull_request: true

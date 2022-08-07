@@ -13,6 +13,9 @@ inputs:
   branch:
     description: upstream branch to open issue to request update (defaults to develop)
     default: ""
+  local_branch:
+    description: branch here to open pull request against (defaults to main)
+    default: "main"
   upstream:
     description: upstream to open issue to request update (defaults to spack)
     default: ""

@@ -36,9 +36,10 @@ still builds. This can be done with the [pakages spack builder](https://syspack.
 
 When:
 
- 1. [this issue was opened](https://github.com/researchapps/spack/issues/2) on a merge of the test package here
- 2. [it triggered this workflow](https://github.com/researchapps/spack/runs/7708080894?check_suite_focus=true)
- 3. [which opened this pull request](https://github.com/researchapps/spack/pull/4)
+ 1. We start with merging a successful build, and that opens [this issue](https://github.com/sciworks/spack-updater/issues/19) with a link for you to click.
+ 2. [This issue was opened](https://github.com/researchapps/spack/issues/2) on a merge of the test package here
+ 3. [It triggered this workflow](https://github.com/researchapps/spack/runs/7708080894?check_suite_focus=true)
+ 4. [Which opened this pull request](https://github.com/researchapps/spack/pull/4)
 
 Note that the pull request links to the issue so it is properly closed when the pull request is merged.
 The workflow used to perform the workflow on the original issue opened is provided under [.github/example-package-request.yaml](.github/example-package-request.yaml). This means to get it working for your spack,
@@ -84,7 +85,39 @@ on:
 ```
 
 In the above, asking for the pull_request will actually open an issue with
-a link for you to click to start the process.
+a link for you to click to start the process. You can also run this on a scheduled event,
+and this variant will look for changes in the spack remote packages. Thus, it's reccommended
+to run this action for pushes to main and on a schedule (without pull_request):
+
+
+```yaml
+name: Update Spack Package
+on:
+  schedule:
+    - cron:  '30 5,17 * * *'
+  push:
+    branches:
+      main
+
+jobs:
+  update-package:
+    name: Update Spack Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Test Adding New Package
+        uses: sciworks/spack-updater@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: .
+          package: m4
+          upstream: https://github.com/researchapps/spack
+          branch: develop
+          pull_request: ${{ github.event_name == 'push' }} 
+```
+
 
 ### Testing
 

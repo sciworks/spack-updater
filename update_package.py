@@ -104,7 +104,8 @@ class SpackChangeRequest:
 
         # Now update the body to include this link!
         body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
-        body += " - [Click here to request the update](%s)" % update_url
+        body += " - [Click here to request the update](%s)\n\n" % update_url
+        body += "You can close this issue once you've clicked and opened the one above!"
 
         # prepare the message
         if not self.from_repo:
@@ -157,12 +158,22 @@ class PackageDiffer:
         if not os.path.exists(package_dir):
             print(f"{package_dir} does not exist, will obtain from upstream...")
             spack_package = self.spack_package_dir(package_name)
-            shutil.copytree(package_dir, spack_package)
+            shutil.copytree(spack_package, package_dir)
+            self.set_changes()
         if not os.path.exists(package_file):
             sys.exit(
                 f"Package file {package_file} does not exist - not found in upstream or here!"
             )
         return package_dir
+
+    def set_changes(self):           
+        """
+        Shared function to indicate to running action there are changes (for PR).
+        """
+        env_file = os.getenv("GITHUB_ENV")
+        if env_file:
+            with open(env_file, "a") as fd:
+                fd.write("spack_updater_changes=true\n")
 
     def spack_package_dir(self, package_name):
         """
@@ -236,6 +247,7 @@ class PackageDiffer:
         # Updates here
         elif not to_spack and not no_change:
             self.stage_changes(spack_package_dir, package_dir)
+            self.set_changes()
 
         # If we don't return a request, assume that we want to update from spack
         # to here.
@@ -249,6 +261,9 @@ class PackageDiffer:
             to_filename = os.path.join(dst, basename)
             if os.path.exists(to_filename):
                 os.remove(to_filename)
+            dest_dir = os.path.dirname(to_filename)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
             shutil.copyfile(filename, to_filename)
 
     def clone(self, upstream, branch=None):
