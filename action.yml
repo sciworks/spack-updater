@@ -96,9 +96,9 @@ runs:
           fi
           echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
 
-      - name: Open Pull Request
-        if: ${{ env.open_pr != '' }}
-        uses: vsoch/pull-request-action@1.0.19
-        env:
-          GITHUB_TOKEN: ${{ inputs.token }}
-          PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
+    - name: Open Pull Request
+      if: ${{ env.open_pr != '' }}
+      uses: vsoch/pull-request-action@1.0.19
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
