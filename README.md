@@ -111,7 +111,6 @@ jobs:
         uses: sciworks/spack-updater@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          user: ${{ github.actor }}
           repo: .
           package: m4
           upstream: https://github.com/researchapps/spack
