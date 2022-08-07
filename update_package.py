@@ -159,11 +159,21 @@ class PackageDiffer:
             print(f"{package_dir} does not exist, will obtain from upstream...")
             spack_package = self.spack_package_dir(package_name)
             shutil.copytree(spack_package, package_dir)
+            self.set_changes()
         if not os.path.exists(package_file):
             sys.exit(
                 f"Package file {package_file} does not exist - not found in upstream or here!"
             )
         return package_dir
+
+    def set_changes(self):           
+        """
+        Shared function to indicate to running action there are changes (for PR).
+        """
+        env_file = os.getenv("GITHUB_ENV")
+        if env_file:
+            with open(env_file, "a") as fd:
+                fd.write("spack_updater_changes=true\n")
 
     def spack_package_dir(self, package_name):
         """
@@ -237,6 +247,7 @@ class PackageDiffer:
         # Updates here
         elif not to_spack and not no_change:
             self.stage_changes(spack_package_dir, package_dir)
+            self.set_changes()
 
         # If we don't return a request, assume that we want to update from spack
         # to here.

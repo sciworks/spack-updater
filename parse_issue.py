@@ -19,7 +19,6 @@ def get_parser():
 
 env_file = os.getenv("GITHUB_ENV")
 
-
 def main():
 
     parser = get_parser()
