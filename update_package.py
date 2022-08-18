@@ -264,6 +264,9 @@ class PackageDiffer:
         Stage changes here
         """
         for filename in recursive_find(src):
+            # Skip external version file, if used
+            if filename.endswith('VERSION'):
+                continue
             basename = filename.replace(src, "").strip(os.sep)
             to_filename = os.path.join(dst, basename)
             if os.path.exists(to_filename):
