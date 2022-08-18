@@ -33,8 +33,15 @@ runs:
   using: "composite"
   steps:
     - name: Install Dependencies
+      env: 
+        action_path: ${{ github.action_path }}
       shell: bash
-      run: pip install -r requirements.txt
+      run: |
+        ls
+        cd ${action_path}
+        ls
+        pip install -r requirements.txt
+        cd -
 
     - name: Build Package
       env:
