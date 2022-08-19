@@ -21,6 +21,8 @@ token = os.environ.get("GITHUB_TOKEN")
 if not token:
     sys.exit("GITHUB_TOKEN is required")
 
+headers = {"Accept": "application/vnd.github+json", "Authorization": "token %s" % token}
+
 # intended to be run in GitHub actions
 from_repository = os.environ.get("GITHUB_REPOSITORY")
 from_branch = os.environ.get("GITHUB_REF_NAME")
@@ -91,10 +93,37 @@ class SpackChangeRequest:
             data["branch"] = self.from_branch
         return data
 
+    def close_issues(self, title):
+        """
+        Given a new issue to be opened, close previous ones for the package.
+        """
+        url = "https://api.github.com/repos/%s/issues" % self.from_repo
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            sys.exit("Issue retrieving previous issues.")
+        issues = response.json()
+        issues = [x for x in issues if "pull_request" not in x]
+        for issue in issues:
+            if issue["title"].strip() == title.strip():
+                self.delete_issue(issue["number"])
+
+    def delete_issue(self, number):
+        """
+        Delete an old issue for a previous update request.
+        """
+        print("Found old issue to close %s" % number)
+        url = "https://api.github.com/repos/%s/issues/%s" % (self.from_repo, number)
+        data = {"number": number, "state": "closed"}
+        response = requests.patch(url, headers=headers, data=json.dumps(data))
+        if response.status_code != 200:
+            sys.exit("Issue closing issue %s" % number)
+
     def submit(self):
         """
         Submit an update or new package request by opening an issue on our own repo
         """
+        self.close_issues(title)
+
         title = "[package-update] request to update %s" % self.package
         body = "This is a request for an automated package update.\n\n" + yaml.dump(
             self.data
@@ -118,10 +147,6 @@ class SpackChangeRequest:
             return
 
         url = "https://api.github.com/repos/%s/issues" % self.from_repo
-        headers = {
-            "Accept": "application/vnd.github+json",
-            "Authorization": "token %s" % token,
-        }
         issue = {"title": title, "body": body}
         response = requests.post(url, headers=headers, data=json.dumps(issue))
         if response.status_code not in [200, 201]:
