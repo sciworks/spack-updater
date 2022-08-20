@@ -122,14 +122,13 @@ class SpackChangeRequest:
         """
         Submit an update or new package request by opening an issue on our own repo
         """
-        self.close_issues(title)
-
         title = "[package-update] request to update %s" % self.package
         body = "This is a request for an automated package update.\n\n" + yaml.dump(
             self.data
         )
         print(f"Title: {title}")
         print(body)
+        self.close_issues(title)
 
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
         encoded_title = urllib.parse.quote(title)
