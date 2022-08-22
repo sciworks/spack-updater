@@ -264,13 +264,17 @@ class PackageDiffer:
             if modified_spack == modified_here:
                 continue
             if modified_spack > modified_here:
-                print(f"File {spack_filename} is more recently modified in spack: {modified_spack} > {modified_here}")
+                print(
+                    f"File {spack_filename} is more recently modified in spack: {modified_spack} > {modified_here}"
+                )
                 to_spack = True
                 no_change = False
                 break
 
             if modified_here > modified_spack:
-                print(f"File {filename} is more recently modified here: {modified_here} > {modified_spack}")
+                print(
+                    f"File {filename} is more recently modified here: {modified_here} > {modified_spack}"
+                )
                 no_change = False
                 break
 
