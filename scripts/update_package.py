@@ -46,26 +46,9 @@ def get_parser():
         default=os.getcwd(),
     )
     parser.add_argument(
-        "--branch",
-        help="repository upstream branch to update",
-        default="develop",
-    )
-    parser.add_argument(
         "--upstream",
         help="repository upstream to update",
         default="https://github.com/vsoch/spack",
-    )
-    parser.add_argument(
-        "--open_issue",
-        help="Open an issue with a link to open a pull request to upstream.",
-        default=False,
-        action="store_true",
-    )
-    parser.add_argument(
-        "--pull_request",
-        help="Open a pull request here with remote changes.",
-        default=False,
-        action="store_true",
     )
     return parser
 
@@ -351,16 +334,11 @@ def main():
     args, extra = parser.parse_known_args()
 
     # Show args to the user
-    print("pull_request: %s" % args.pull_request)
-    print("  open_issue: %s" % args.open_issue)
     print("    upstream: %s" % args.upstream)
     print("     package: %s" % args.package)
-    print("      branch: %s" % args.branch)
     print("        repo: %s" % args.repo)
 
-    cli = PackageDiffer(
-        args.repo, args.upstream, args.branch, pull_request=args.pull_request
-    )
+    cli = PackageDiffer(args.repo, args.upstream, args.branch)
     request = cli.diff(args.package)
     if request and args.open_issue:
         request.submit()
