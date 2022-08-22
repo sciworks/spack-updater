@@ -112,8 +112,9 @@ class SpackChangeRequest:
         Submit an update or new package request by opening an issue on our own repo
         """
         title = "[package-update] request to update %s" % self.package
-        body = "This is a request for an automated package update. Add the spack-updater label to this issue to trigger it.\n\n" + yaml.dump(
-            self.data
+        body = (
+            "This is a request for an automated package update. Add the spack-updater label to this issue to trigger it.\n\n"
+            + yaml.dump(self.data)
         )
         print(f"Title: {title}")
         print(body)
@@ -207,6 +208,16 @@ class PackageDiffer:
         if self.spack_root and os.path.exists(self.spack_root):
             shutil.rmtree(self.spack_root)
 
+    def git_modified_time(self, path, root):
+        """
+        Get last modified date or time.
+        """
+        # This gives the unix timestamp
+        cmd = ["git", "log", "-1", "--pretty=%ct", path]
+        p = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE)
+        out, _ = p.communicate()
+        return int(out.decode("utf-8").strip())
+
     def diff(self, package_name):
         """
         Perform a diff:
@@ -236,14 +247,20 @@ class PackageDiffer:
             basename = filename.replace(package_dir, "").strip(os.sep)
             spack_filename = os.path.join(spack_package_dir, basename)
 
+            # Ignore version file
+            if basename.endswith("VERSION"):
+                continue
+
             # Could be that it's a new file, OR...
             # There could be the case here of a file being deleted...
             if not os.path.exists(spack_filename):
                 continue
 
             # The spack file was modified more recently (later time)
-            modified_spack = os.stat(spack_filename).st_mtime
-            modified_here = os.stat(filename).st_mtime
+            modified_spack = self.git_modified_time(
+                spack_filename, root=spack_package_dir
+            )
+            modified_here = self.git_modified_time(filename, root=package_dir)
             if modified_spack == modified_here:
                 continue
             if modified_spack > modified_here:
