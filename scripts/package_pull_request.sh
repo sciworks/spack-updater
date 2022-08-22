@@ -5,14 +5,20 @@ printf "GitHub Actor: ${GITHUB_ACTOR}\n"
 export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
 git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 git branch
-git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
+
+# Move packages somewhere else
+repo_path=$(realpath "${repo}")
+repo_path=${repo_path}/packages/${package}
+cp -R ${repo_path} /tmp/packages/${package}
+
+# Important - needs to be checked out from develop!
+git checkout -b "${BRANCH_FROM}" develop || git checkout "${BRANCH_FROM}"
 git branch
 git config --global user.name "github-actions"
 git config --global user.email "github-actions@users.noreply.github.com"
-repo_path=$(realpath "${repo}")
-tree ${repo_path}
-repo_path=${repo_path}/packages/${package}
-git add $repo_path/*
+cp /tmp/packages/${repo_path}/* var/spack/repos/builtin/packages/${package}/
+rm -rf var/spack/repos/builtin/packages/${package}/VERSION
+git add var/spack/repos/builtin/packages/${package}/*
 if git diff-index --quiet HEAD --; then
     printf "No changes\n"
 else
