@@ -10,10 +10,11 @@ git branch
 # Move packages somewhere else
 repo_path=$(realpath "${repo}")
 repo_path=${repo_path}/packages/${package}
+mkdir -p /tmp/packages/${package}
 cp -R ${repo_path} /tmp/packages/${package}
 
 # Important - needs to be checked out from develop!
-git checkout -b "${BRANCH_FROM}" develop || git checkout "${BRANCH_FROM}"
+git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
 git config --global user.name "github-actions"
 git config --global user.email "github-actions@users.noreply.github.com"
