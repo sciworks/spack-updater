@@ -4,6 +4,7 @@
 printf "GitHub Actor: ${GITHUB_ACTOR}\n"
 export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
 git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+git fetch
 git branch
 
 # Move packages somewhere else
