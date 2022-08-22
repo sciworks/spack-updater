@@ -1,0 +1,33 @@
+name: "spack updater action issue parser"
+description: "Parse an issue into metadata needed for the update"
+inputs:
+  title:
+    description: Issue event title
+    required: true
+  number:
+    description: issue event number
+    required: true
+  body:
+    description: issue body
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Parse Issue
+      env:
+        title: ${{ inputs.title }}
+        number: ${{ inputs.number }}
+        body: ${{ inputs.body }}
+        action_path: ${{ github.action_path }}
+      run: |
+        printf "Issue title: ${title}\n"
+        printf "Issue number: ${number}\n"
+        echo "${body}" > new-issue.txt
+        cat new-issue.txt
+        # Script to parse the issue, sets envars needed for subsequent workflows
+        wget https://raw.githubusercontent.com/sciworks/spack-updater/test/scripts/parse_issue.py
+        action_root=$(dirname ${action_path})
+        python ${action_root}/scripts/parse_issue.py new-issue.txt
+        echo "issue_number=${number}" >> $GITHUB_ENV
+      shell: bash
