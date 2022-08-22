@@ -26,7 +26,7 @@ headers = {"Accept": "application/vnd.github+json", "Authorization": "token %s" 
 # intended to be run in GitHub actions
 from_repository = os.environ.get("GITHUB_REPOSITORY")
 from_branch = os.environ.get("BRANCH_FROM")
-if not from_repository or not from_branch or not repo:
+if not from_repository or not from_branch:
     print("GITHUB_REPOSITORY or FROM_BRANCH not found in environment.")
 
 org, repo = from_repository.split("/")
