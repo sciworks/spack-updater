@@ -65,3 +65,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
+        PULL_REQUEST_REPOSITORY: spack/spack
