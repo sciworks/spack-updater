@@ -13,6 +13,9 @@ repo_path=${repo_path}/packages/${package}
 mkdir -p /tmp/packages/${package}
 cp -R ${repo_path} /tmp/packages/${package}
 
+# Trivial commit
+git commit -a -s -m 'save trivial changes'
+
 # Important - needs to be checked out from develop!
 git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
