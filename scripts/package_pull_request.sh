@@ -24,7 +24,9 @@ git commit -a -s -m 'save trivial changes'
 # Important - needs to be checked out from develop!
 git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
-cp /tmp/packages/${repo_path}/* var/spack/repos/builtin/packages/${package}/
+
+# Copy changed files to put in new branch
+cp /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
 rm -rf var/spack/repos/builtin/packages/${package}/VERSION
 git add var/spack/repos/builtin/packages/${package}/*
 if git diff-index --quiet HEAD --; then
