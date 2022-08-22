@@ -281,7 +281,6 @@ class PackageDiffer:
         elif not to_spack and not no_change:
             self.stage_changes(spack_package_dir, package_dir)
             self.set_changes()
-            self.pull_request()
 
         # If we don't return a request, assume that we want to update from spack
         # to here.
