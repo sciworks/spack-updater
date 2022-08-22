@@ -11,8 +11,7 @@ git fetch
 git branch
 
 # Move packages somewhere else
-repo_path=$(realpath "${repo}")
-repo_path=${repo_path}/packages/${package}
+repo_path=./packages/${package}
 mkdir -p /tmp/packages/${package}
 cp -R ${repo_path} /tmp/packages/${package}
 

@@ -270,7 +270,7 @@ class PackageDiffer:
                 break
 
             if modified_here > modified_spack:
-                print("File {modified_here} is more recently modified here.")
+                print(f"File {modified_here} is more recently modified here.")
                 no_change = False
 
         if to_spack:
