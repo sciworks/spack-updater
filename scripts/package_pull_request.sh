@@ -15,9 +15,9 @@ git branch
 repo_path=${PWD}/packages/${package}
 echo ${repo_path}
 ls ${repo_path}
-mkdir -p /tmp/packages/${package}
-cp -R ${repo_path} /tmp/packages/
-ls /tmp/packages
+mkdir -p /tmp/packages
+cp -R ${repo_path} /tmp/packages
+ls /tmp/packages/${package}
 
 # Trivial commit
 git commit -a -s -m 'save trivial changes'
