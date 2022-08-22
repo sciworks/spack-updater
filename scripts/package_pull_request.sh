@@ -23,7 +23,7 @@ ls /tmp/packages
 git commit -a -s -m 'save trivial changes'
 
 # Important - needs to be checked out from upstream develop!
-git checkout -b "${BRANCH_FROM}" upstream/develop
+git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
 
 # Update with develop
