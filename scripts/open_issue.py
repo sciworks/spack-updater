@@ -29,9 +29,7 @@ from_branch = os.environ.get("BRANCH_FROM")
 if not from_repository or not from_branch:
     print("GITHUB_REPOSITORY or FROM_BRANCH not found in environment.")
 
-org, repo = from_repository.split("/")
-print(f"Org: {org}")
-print(f"Repo: {repo}")
+print(f"Repo: {from_repository}")
 print(f"From Branch: {from_branch}")
 
 def open_issue():
@@ -40,12 +38,12 @@ def open_issue():
     """
     title = "[package-update] request to open pull request."
     body = "This is a request to open a pull request for a package update.\n\n"
-    body += "[Click here to open the pull request](https://github.com/spack/spack/compare/develop...{org}:{repo}:{from_branch})"
+    body += f"[Click here to open the pull request](https://github.com/{from_repository}/pull/new/{from_branch})"
 
     # This is the url we assemble that will be provided in the issue to trigger an update workflow
     encoded_title = urllib.parse.quote(title)
     encoded_body = urllib.parse.quote(body)
-    url = "https://api.github.com/repos/{org}/{repo}/issues"
+    url = "https://api.github.com/repos/{from_repository}/issues"
     print(url)
     issue = {"title": title, "body": body}
     print(issue)
