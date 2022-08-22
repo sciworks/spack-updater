@@ -36,14 +36,7 @@ git add var/spack/repos/builtin/packages/${package}/*
 
 git status
 ls var/spack/repos/builtin/packages/${package}/*
-if git diff-index --quiet develop --; then
-    printf "No changes\n"
-else
-    printf "Changes\n"
-    git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')"
-    git push origin "${BRANCH_FROM}"
-    echo "open_pr=1" >> $GITHUB_ENV
-fi
+
+git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')" && git push origin ${BRANCH_FROM} && echo "open_pr=1" >> $GITHUB_ENV  || echo "No changes"
 echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
 echo "BRANCH_FROM=${BRANCH_FROM}" >> $GITHUB_ENV
-
