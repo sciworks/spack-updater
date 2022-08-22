@@ -34,7 +34,7 @@ git pull upstream develop
 # Copy changed files to put in new branch
 echo "Staged files:"
 ls /tmp/packages/${package}/
-cp /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
+cp -R /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
 rm -rf var/spack/repos/builtin/packages/${package}/VERSION
 git add var/spack/repos/builtin/packages/${package}/*
 
