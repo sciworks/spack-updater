@@ -124,13 +124,6 @@ class SpackChangeRequest:
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
         encoded_title = urllib.parse.quote(title)
         encoded_body = urllib.parse.quote(body)
-        update_url = f"{self.to_repo}/issues/new?labels=package-update&title={encoded_title}&body={encoded_body}"
-        print(update_url)
-
-        # Now update the body to include this link!
-        body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
-        body += " - [Click here to request the update](%s)\n\n" % update_url
-        body += "You can close this issue once you've clicked and opened the one above!"
 
         # prepare the message
         if not self.from_repo:
