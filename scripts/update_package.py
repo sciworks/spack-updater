@@ -112,7 +112,7 @@ class SpackChangeRequest:
         Submit an update or new package request by opening an issue on our own repo
         """
         title = "[package-update] request to update %s" % self.package
-        body = "This is a request for an automated package update.\n\n" + yaml.dump(
+        body = "This is a request for an automated package update. Add the spack-updater label to this issue to trigger it.\n\n" + yaml.dump(
             self.data
         )
         print(f"Title: {title}")
