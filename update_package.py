@@ -93,9 +93,9 @@ class SpackChangeRequest:
             data["branch"] = self.from_branch
         return data
 
-    def close_issues(self, title):
+    def has_issues(self, title):
         """
-        Given a new issue to be opened, close previous ones for the package.
+        Given a new issue to be opened, return True if an issue is already open.
         """
         url = "https://api.github.com/repos/%s/issues" % self.from_repo
         response = requests.get(url, headers=headers)
@@ -105,11 +105,17 @@ class SpackChangeRequest:
         issues = [x for x in issues if "pull_request" not in x]
         for issue in issues:
             if issue["title"].strip() == title.strip():
-                self.delete_issue(issue["number"])
+                return True
+        return False
 
     def delete_issue(self, number):
         """
         Delete an old issue for a previous update request.
+
+        This isn't currently used. The original updater logic always opened a new issue
+        (and closed previous ones) but given the slowness of the PR review process,
+        this will make a huge number of issues. Instead, if we find an open issue
+        we simply don't open a new one.
         """
         print("Found old issue to close %s" % number)
         url = "https://api.github.com/repos/%s/issues/%s" % (self.from_repo, number)
@@ -128,7 +134,9 @@ class SpackChangeRequest:
         )
         print(f"Title: {title}")
         print(body)
-        self.close_issues(title)
+        if self.has_issues(title):
+            print(f"Request {title} already has an issue opened, not re-opening.")
+            return
 
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
         encoded_title = urllib.parse.quote(title)
@@ -289,7 +297,7 @@ class PackageDiffer:
         """
         for filename in recursive_find(src):
             # Skip external version file, if used
-            if filename.endswith('VERSION'):
+            if filename.endswith("VERSION"):
                 continue
             basename = filename.replace(src, "").strip(os.sep)
             to_filename = os.path.join(dst, basename)

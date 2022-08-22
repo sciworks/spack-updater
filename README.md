@@ -87,11 +87,10 @@ on:
 
 In the above, asking for the pull_request will actually open an issue with
 a link for you to click to start the process. If there are previous issues open
-with the same title (to update the same package) they will be closed. We could
-tweak this to do the opposite - to check for an open issue and not open a new one,
-if desired. You can also run this on a scheduled event,
-and this variant will look for changes in the spack remote packages. Thus, it's reccommended
-to run this action for pushes to main and on a schedule (without pull_request):
+with the same title (to update the same package) a new issue will not be opened. 
+You can also run this on a scheduled event, and this variant will look for 
+changes in the spack remote packages. Thus, it's reccommended to run this action 
+for pushes to main and on a schedule (without pull_request):
 
 
 ```yaml
