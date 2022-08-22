@@ -15,7 +15,8 @@ repo_path=${PWD}/packages/${package}
 echo ${repo_path}
 ls ${repo_path}
 mkdir -p /tmp/packages/${package}
-cp -R ${repo_path}/* /tmp/packages/${package}/*
+cp -R ${repo_path} /tmp/packages/
+ls /tmp/packages
 
 # Trivial commit
 git commit -a -s -m 'save trivial changes'
