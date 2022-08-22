@@ -43,7 +43,7 @@ def open_issue():
     # This is the url we assemble that will be provided in the issue to trigger an update workflow
     encoded_title = urllib.parse.quote(title)
     encoded_body = urllib.parse.quote(body)
-    url = "https://api.github.com/repos/{from_repository}/issues"
+    url = f"https://api.github.com/repos/{from_repository}/issues"
     print(url)
     issue = {"title": title, "body": body}
     print(issue)
