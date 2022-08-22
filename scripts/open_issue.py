@@ -30,9 +30,9 @@ if not from_repository or not from_branch:
     print("GITHUB_REPOSITORY or FROM_BRANCH not found in environment.")
 
 org, repo = from_repository.split("/")
-print(org)
-print(repo)
-
+print(f"Org: {org}")
+print(f"Repo: {repo}")
+print(f"From Branch: {from_branch}")
 
 def open_issue():
     """
@@ -46,7 +46,9 @@ def open_issue():
     encoded_title = urllib.parse.quote(title)
     encoded_body = urllib.parse.quote(body)
     url = "https://api.github.com/repos/{org}/{repo}/issues"
+    print(url)
     issue = {"title": title, "body": body}
+    print(issue)
     response = requests.post(url, headers=headers, data=json.dumps(issue))
     if response.status_code not in [200, 201]:
         sys.exit("Issue making request: %s, %s" % (response.reason, response.json()))
