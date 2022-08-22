@@ -38,7 +38,6 @@ def open_issue():
     Open an issue with link to open a pull request.
     """
     title = "[package-update] request to open pull request."
-    issue = f"https://github.com/{from_repository}/issues/{number}"
     body = "This is a request to open a pull request for a package update.\n\n"
 
     # This is the url we assemble that will be provided in the issue to trigger an update workflow
@@ -57,7 +56,7 @@ def open_issue():
 
     # Patch with the URL
     number = res["number"]
-    issue_url = "https://github.com/{from_repository}/issues/{number}"
+    issue_url = f"https://github.com/{from_repository}/issues/{number}"
     body += f"[Click here to open the pull request](https://github.com/{from_repository}/pull/new/{from_branch}?expand=1&body=This will close {issue_url})"
     issue = {"body": body}
     response = requests.patch(
