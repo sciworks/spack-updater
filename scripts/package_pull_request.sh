@@ -14,9 +14,11 @@ git branch
 # Move packages somewhere else
 repo_path=${PWD}/packages/${package}
 echo ${repo_path}
+echo "Original files:"
 ls ${repo_path}
 mkdir -p /tmp/packages
 cp -R ${repo_path} /tmp/packages
+echo "Copied files:"
 ls /tmp/packages/${package}
 
 # Trivial commit
@@ -30,6 +32,8 @@ git branch
 git pull upstream develop
 
 # Copy changed files to put in new branch
+echo "Staged files:"
+ls /tmp/packages/${package}/
 cp /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
 rm -rf var/spack/repos/builtin/packages/${package}/VERSION
 git add var/spack/repos/builtin/packages/${package}/*
