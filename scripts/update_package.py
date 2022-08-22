@@ -272,6 +272,7 @@ class PackageDiffer:
             if modified_here > modified_spack:
                 print(f"File {filename} is more recently modified here: {modified_here} > {modified_spack}")
                 no_change = False
+                break
 
         if to_spack:
             request.populate_update_package(os.path.relpath(package_dir, self.repo))
@@ -279,28 +280,7 @@ class PackageDiffer:
 
         # Updates here
         elif not to_spack and not no_change:
-            self.stage_changes(spack_package_dir, package_dir)
             self.set_changes()
-
-        # If we don't return a request, assume that we want to update from spack
-        # to here.
-
-    def stage_changes(self, src, dst):
-        """
-        Stage changes here
-        """
-        for filename in recursive_find(src):
-            # Skip external version file, if used
-            if filename.endswith("VERSION"):
-                continue
-            basename = filename.replace(src, "").strip(os.sep)
-            to_filename = os.path.join(dst, basename)
-            if os.path.exists(to_filename):
-                os.remove(to_filename)
-            dest_dir = os.path.dirname(to_filename)
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-            shutil.copyfile(filename, to_filename)
 
     def clone(self, upstream, branch=None):
         """
