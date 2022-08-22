@@ -294,6 +294,9 @@ class PackageDiffer:
         """
         Clone spack develop to a temporary directory.
         """
+        # The user can provide just the org/reponame
+        if not upstream.startswith("http"):
+            upstream = f"https://github.com/{upstream}"
         tmpdir = tempfile.mkdtemp()
         cmd = ["git", "clone", "--depth", "1"]
         if branch:
