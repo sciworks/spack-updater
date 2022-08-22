@@ -22,4 +22,5 @@ else
     echo "open_pr=1" >> $GITHUB_ENV
 fi
 echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
+echo "BRANCH_FROM=${BRANCH_FROM}" >> $GITHUB_ENV
 

@@ -264,13 +264,13 @@ class PackageDiffer:
             if modified_spack == modified_here:
                 continue
             if modified_spack > modified_here:
-                print('File is more recently modified in spack.')
+                print("File is more recently modified in spack.")
                 to_spack = True
                 no_change = False
                 break
 
             if modified_here > modified_spack:
-                print('File is more recently modified here.')
+                print("File is more recently modified here.")
                 no_change = False
 
         if to_spack:
@@ -281,6 +281,7 @@ class PackageDiffer:
         elif not to_spack and not no_change:
             self.stage_changes(spack_package_dir, package_dir)
             self.set_changes()
+            self.pull_request()
 
         # If we don't return a request, assume that we want to update from spack
         # to here.
