@@ -4,6 +4,9 @@
 printf "GitHub Actor: ${GITHUB_ACTOR}\n"
 export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
 git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+git config --global user.name "github-actions"
+git config --global user.email "github-actions@users.noreply.github.com"
+
 git fetch
 git branch
 
@@ -19,8 +22,6 @@ git commit -a -s -m 'save trivial changes'
 # Important - needs to be checked out from develop!
 git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
-git config --global user.name "github-actions"
-git config --global user.email "github-actions@users.noreply.github.com"
 cp /tmp/packages/${repo_path}/* var/spack/repos/builtin/packages/${package}/
 rm -rf var/spack/repos/builtin/packages/${package}/VERSION
 git add var/spack/repos/builtin/packages/${package}/*
