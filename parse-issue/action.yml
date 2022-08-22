@@ -27,7 +27,7 @@ runs:
         cat new-issue.txt
         # Script to parse the issue, sets envars needed for subsequent workflows
         wget https://raw.githubusercontent.com/sciworks/spack-updater/test/scripts/parse_issue.py
-        action_root=$(dirname ${action_path})
-        python ${action_root}/scripts/parse_issue.py new-issue.txt
+        python ${action_path}/scripts/parse_issue.py new-issue.txt
         echo "issue_number=${number}" >> $GITHUB_ENV
+        echo "issue_file=${PWD}/new-issue.txt" >> $GITHUB_ENV
       shell: bash
