@@ -166,7 +166,7 @@ class PackageDiffer:
     Determine if a package is different and act accordingly.
     """
 
-    def __init__(self, repo, upstream, branch="develop":
+    def __init__(self, repo, upstream, branch="develop"):
         self.repo = os.path.abspath(repo)
         self.spack_root = self.clone(upstream, branch)
 
