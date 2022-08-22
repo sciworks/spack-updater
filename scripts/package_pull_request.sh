@@ -4,6 +4,7 @@
 printf "GitHub Actor: ${GITHUB_ACTOR}\n"
 export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
 git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+git remote add upstream "https://x-access-token:${GITHUB_TOKEN}@github.com/spack/spack.git"
 git config --global user.name "github-actions"
 git config --global user.email "github-actions@users.noreply.github.com"
 
@@ -24,6 +25,9 @@ git commit -a -s -m 'save trivial changes'
 # Important - needs to be checked out from develop!
 git checkout -b "${BRANCH_FROM}" origin/develop
 git branch
+
+# Update with develop
+git pull upstream develop
 
 # Copy changed files to put in new branch
 cp /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
