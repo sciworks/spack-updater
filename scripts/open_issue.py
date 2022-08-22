@@ -41,8 +41,6 @@ def open_issue():
     body = "This is a request to open a pull request for a package update.\n\n"
 
     # This is the url we assemble that will be provided in the issue to trigger an update workflow
-    encoded_title = urllib.parse.quote(title)
-    encoded_body = urllib.parse.quote(body)
     url = f"https://api.github.com/repos/{from_repository}/issues"
     print(url)
     issue = {"title": title, "body": body}
@@ -58,7 +56,8 @@ def open_issue():
     number = res["number"]
     issue_url = f"https://github.com/{from_repository}/issues/{number}"
     body += f"[Click here to open the pull request](https://github.com/{from_repository}/pull/new/{from_branch}?expand=1&body=This will close {issue_url})"
-    issue = {"body": body}
+    encoded_body = urllib.parse.quote(body)
+    issue = {"body": encoded_body}
     response = requests.patch(
         url + "/" + str(number), headers=headers, data=json.dumps(issue)
     )
