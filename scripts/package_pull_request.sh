@@ -33,7 +33,10 @@ git pull upstream develop
 cp /tmp/packages/${package}/* var/spack/repos/builtin/packages/${package}/
 rm -rf var/spack/repos/builtin/packages/${package}/VERSION
 git add var/spack/repos/builtin/packages/${package}/*
-if git diff-index --quiet HEAD --; then
+
+git status
+ls var/spack/repos/builtin/packages/${package}/*
+if git diff-index --quiet develop --; then
     printf "No changes\n"
 else
     printf "Changes\n"
