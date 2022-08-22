@@ -59,7 +59,7 @@ runs:
       run: /bin/bash ${action_path}/scripts/package_pull_request.sh
       
     - name: Pull Request Issue
-      if: ${{ env.spack_updater_changes == 'true' }}
+      if: ${{ env.open_pr != '' }}
       shell: bash
       env:
         GITHUB_ACTOR: ${{ inputs.user }}
@@ -67,4 +67,3 @@ runs:
         package: ${{ inputs.package }}
         action_path: ${{ github.action_path }}
       run: python ${action_path}/scripts/open_issue.py
-
