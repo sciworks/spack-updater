@@ -166,10 +166,9 @@ class PackageDiffer:
     Determine if a package is different and act accordingly.
     """
 
-    def __init__(self, repo, upstream, branch=None, pull_request=True):
+    def __init__(self, repo, upstream, branch="develop":
         self.repo = os.path.abspath(repo)
         self.spack_root = self.clone(upstream, branch)
-        self.pull_request = pull_request
 
     def find_package(self, package_name):
         """
@@ -193,7 +192,7 @@ class PackageDiffer:
         Shared function to indicate to running action there are changes (for PR).
         """
         env_file = os.getenv("GITHUB_ENV")
-        if env_file and self.pull_request:
+        if env_file:
             with open(env_file, "a") as fd:
                 fd.write("spack_updater_changes=true\n")
 
@@ -338,7 +337,7 @@ def main():
     print("     package: %s" % args.package)
     print("        repo: %s" % args.repo)
 
-    cli = PackageDiffer(args.repo, args.upstream, args.branch)
+    cli = PackageDiffer(args.repo, args.upstream)
     request = cli.diff(args.package)
     if request and args.open_issue:
         request.submit()

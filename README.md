@@ -34,6 +34,8 @@ still builds. This can be done with the [pakages spack builder](https://syspack.
 
 ### Example
 
+*TODO* this will be updated when @vsoch refactors it.
+
 When:
 
  1. We start with merging a successful build, and that opens [this issue](https://github.com/sciworks/spack-updater/issues/19) with a link for you to click.
