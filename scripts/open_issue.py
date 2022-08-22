@@ -55,9 +55,11 @@ def open_issue():
     # Patch with the URL
     number = res["number"]
     issue_url = f"https://github.com/{from_repository}/issues/{number}"
-    body += f"[Click here to open the pull request](https://github.com/{from_repository}/pull/new/{from_branch}?expand=1&body=This will close {issue_url})"
-    encoded_body = urllib.parse.quote(body)
-    issue = {"body": encoded_body}
+    issue_url = urllib.parse.quote(
+        f"https://github.com/{from_repository}/pull/new/{from_branch}?expand=1&body=This will close {issue_url}"
+    )
+    body += f"[Click here to open the pull request]({issue_url})"
+    issue = {"body": body}
     response = requests.patch(
         url + "/" + str(number), headers=headers, data=json.dumps(issue)
     )
