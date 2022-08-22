@@ -342,7 +342,7 @@ def main():
 
     cli = PackageDiffer(args.repo, args.upstream)
     request = cli.diff(args.package)
-    if request and args.open_issue:
+    if request:
         request.submit()
     cli.cleanup()
 
