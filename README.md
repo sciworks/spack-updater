@@ -26,7 +26,7 @@ still builds. This can be done with the [pakages spack builder](https://syspack.
 
 When:
 
- 1. We start with merging a successful build, and that opens [this issue](https://github.com/sciworks/spack-updater/issues/19) with a link for you to click.
+ 1. Here is an example of an issue that is opened with a branch to PR: []()
  2. [This issue was opened](https://github.com/researchapps/spack/issues/2) on a merge of the test package here
  3. [It triggered this workflow](https://github.com/researchapps/spack/runs/7708080894?check_suite_focus=true)
  4. [Which opened this pull request](https://github.com/researchapps/spack/pull/4)
