@@ -46,15 +46,6 @@ runs:
           $cmd
       shell: bash
 
-
-
-        if last_modified_spack > last_modified_here:
-            self.set_changes("spack_updater_from_spack")
-
-        # Local changes are newer
-        elif last_modified_here > last_modified_spack:
-            self.set_changes("spack_updater_to_spack")
-
     # Case 1: changes from local TO spack pushes to a branch -> issue -> open PR
     - name: Create Update Branch
       if: ${{ env.spack_updater_to_spack == 'true' }}
