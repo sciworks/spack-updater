@@ -239,7 +239,7 @@ class PackageDiffer:
 
         # For each file in current, compare to spack install
         # Keep track of last modified for each
-        last_modified = 0
+        last_modified_here = 0
         last_modified_spack = 0
         for filename in recursive_find(package_dir):
             basename = filename.replace(package_dir, "").strip(os.sep)
