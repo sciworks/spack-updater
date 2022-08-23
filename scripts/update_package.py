@@ -46,26 +46,9 @@ def get_parser():
         default=os.getcwd(),
     )
     parser.add_argument(
-        "--branch",
-        help="repository upstream branch to update",
-        default="develop",
-    )
-    parser.add_argument(
         "--upstream",
         help="repository upstream to update",
         default="https://github.com/vsoch/spack",
-    )
-    parser.add_argument(
-        "--open_issue",
-        help="Open an issue with a link to open a pull request to upstream.",
-        default=False,
-        action="store_true",
-    )
-    parser.add_argument(
-        "--pull_request",
-        help="Open a pull request here with remote changes.",
-        default=False,
-        action="store_true",
     )
     return parser
 
@@ -129,8 +112,9 @@ class SpackChangeRequest:
         Submit an update or new package request by opening an issue on our own repo
         """
         title = "[package-update] request to update %s" % self.package
-        body = "This is a request for an automated package update.\n\n" + yaml.dump(
-            self.data
+        body = (
+            "This is a request for an automated package update. Add the spack-updater label to this issue to trigger it.\n\n"
+            + yaml.dump(self.data)
         )
         print(f"Title: {title}")
         print(body)
@@ -141,13 +125,6 @@ class SpackChangeRequest:
         # This is the url we assemble that will be provided in the issue to trigger an update workflow
         encoded_title = urllib.parse.quote(title)
         encoded_body = urllib.parse.quote(body)
-        update_url = f"{self.to_repo}/issues/new?labels=package-update&title={encoded_title}&body={encoded_body}"
-        print(update_url)
-
-        # Now update the body to include this link!
-        body = "This is a request for an automated package update. You can click the link below to open an issue on spack and request the update.\n\n"
-        body += " - [Click here to request the update](%s)\n\n" % update_url
-        body += "You can close this issue once you've clicked and opened the one above!"
 
         # prepare the message
         if not self.from_repo:
@@ -183,10 +160,9 @@ class PackageDiffer:
     Determine if a package is different and act accordingly.
     """
 
-    def __init__(self, repo, upstream, branch=None, pull_request=True):
+    def __init__(self, repo, upstream, branch="develop"):
         self.repo = os.path.abspath(repo)
         self.spack_root = self.clone(upstream, branch)
-        self.pull_request = pull_request
 
     def find_package(self, package_name):
         """
@@ -210,7 +186,7 @@ class PackageDiffer:
         Shared function to indicate to running action there are changes (for PR).
         """
         env_file = os.getenv("GITHUB_ENV")
-        if env_file and self.pull_request:
+        if env_file:
             with open(env_file, "a") as fd:
                 fd.write("spack_updater_changes=true\n")
 
@@ -231,6 +207,16 @@ class PackageDiffer:
     def cleanup(self):
         if self.spack_root and os.path.exists(self.spack_root):
             shutil.rmtree(self.spack_root)
+
+    def git_modified_time(self, path, root):
+        """
+        Get last modified date or time.
+        """
+        # This gives the unix timestamp
+        cmd = ["git", "log", "-1", "--pretty=%ct", path]
+        p = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE)
+        out, _ = p.communicate()
+        return int(out.decode("utf-8").strip())
 
     def diff(self, package_name):
         """
@@ -261,23 +247,36 @@ class PackageDiffer:
             basename = filename.replace(package_dir, "").strip(os.sep)
             spack_filename = os.path.join(spack_package_dir, basename)
 
+            # Ignore version file
+            if basename.endswith("VERSION"):
+                continue
+
             # Could be that it's a new file, OR...
             # There could be the case here of a file being deleted...
             if not os.path.exists(spack_filename):
                 continue
 
             # The spack file was modified more recently (later time)
-            modified_spack = os.stat(spack_filename).st_mtime
-            modified_here = os.stat(filename).st_mtime
+            modified_spack = self.git_modified_time(
+                spack_filename, root=spack_package_dir
+            )
+            modified_here = self.git_modified_time(filename, root=package_dir)
             if modified_spack == modified_here:
                 continue
             if modified_spack > modified_here:
+                print(
+                    f"File {spack_filename} is more recently modified in spack: {modified_spack} > {modified_here}"
+                )
                 to_spack = True
                 no_change = False
                 break
 
             if modified_here > modified_spack:
+                print(
+                    f"File {filename} is more recently modified here: {modified_here} > {modified_spack}"
+                )
                 no_change = False
+                break
 
         if to_spack:
             request.populate_update_package(os.path.relpath(package_dir, self.repo))
@@ -285,33 +284,15 @@ class PackageDiffer:
 
         # Updates here
         elif not to_spack and not no_change:
-            self.stage_changes(spack_package_dir, package_dir)
             self.set_changes()
-
-        # If we don't return a request, assume that we want to update from spack
-        # to here.
-
-    def stage_changes(self, src, dst):
-        """
-        Stage changes here
-        """
-        for filename in recursive_find(src):
-            # Skip external version file, if used
-            if filename.endswith("VERSION"):
-                continue
-            basename = filename.replace(src, "").strip(os.sep)
-            to_filename = os.path.join(dst, basename)
-            if os.path.exists(to_filename):
-                os.remove(to_filename)
-            dest_dir = os.path.dirname(to_filename)
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-            shutil.copyfile(filename, to_filename)
 
     def clone(self, upstream, branch=None):
         """
         Clone spack develop to a temporary directory.
         """
+        # The user can provide just the org/reponame
+        if not upstream.startswith("http"):
+            upstream = f"https://github.com/{upstream}"
         tmpdir = tempfile.mkdtemp()
         cmd = ["git", "clone", "--depth", "1"]
         if branch:
@@ -351,18 +332,13 @@ def main():
     args, extra = parser.parse_known_args()
 
     # Show args to the user
-    print("pull_request: %s" % args.pull_request)
-    print("  open_issue: %s" % args.open_issue)
     print("    upstream: %s" % args.upstream)
     print("     package: %s" % args.package)
-    print("      branch: %s" % args.branch)
     print("        repo: %s" % args.repo)
 
-    cli = PackageDiffer(
-        args.repo, args.upstream, args.branch, pull_request=args.pull_request
-    )
+    cli = PackageDiffer(args.repo, args.upstream)
     request = cli.diff(args.package)
-    if request and args.open_issue:
+    if request:
         request.submit()
     cli.cleanup()
 

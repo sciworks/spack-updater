@@ -10,7 +10,7 @@ title = os.environ.get("title")
 
 def get_parser():
     parser = argparse.ArgumentParser(
-        description="Spack Updated Issue Parser",
+        description="Spack Updater Issue Parser",
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser.add_argument("issue_text", help="path to issue text file.")

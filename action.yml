@@ -4,27 +4,18 @@ inputs:
   package:
     description: package in local repo to check
     required: true
+  upstream:
+    description: upstream to open issue to request update (should be repository here)
+    required: true
   user:
     default: user for to GitHub to PR
     required: true
   token:
     default: token authenticate to GitHub to PR
     required: true
-  open_issue:
-    description: given local changes, open an issue with a link for a pull request
-    default: false
-  pull_request:
-    description: given remote changes, open a pull request here with updates
-    default: false
-  branch:
-    description: upstream branch to open issue to request update (defaults to develop)
-    default: ""
   local_branch:
     description: branch here to open pull request against (defaults to main)
     default: "main"
-  upstream:
-    description: upstream to open issue to request update (defaults to spack)
-    default: ""
   repo:
     description: local repository with recipes (defaults to PWD)
     default: "."
@@ -46,32 +37,16 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
         user: ${{ inputs.user }}
         repo: ${{ inputs.repo }}
-        branch: ${{ inputs.branch }}
         upstream: ${{ inputs.upstream }}
         package: ${{ inputs.package }}
-        open_issue: ${{ inputs.open_issue }}
-        pull_request: ${{ inputs.pull_request }}
         action_path: ${{ github.action_path }}
-
       run: |
-          cmd="python ${action_path}/update_package.py --repo ${repo} ${package}"
-          if [[ "${upstream}" != "" ]]; then
-              cmd="${cmd} --upstream ${upstream}"
-          fi
-          if [[ "${branch}" != "" ]]; then
-              cmd="${cmd} --branch ${branch}"
-          fi
-          if [[ "${open_issue}" == "true" ]]; then
-              cmd="${cmd} --open_issue"
-          fi
-          if [[ "${pull_request}" == "true" ]]; then
-              cmd="${cmd} --pull_request"
-          fi
+          cmd="python ${action_path}/scripts/update_package.py --repo ${repo} ${package} --upstream ${upstream}"
           echo ${cmd}
           $cmd
       shell: bash
 
-    - name: Pull request changes
+    - name: Create Update Branch
       if: ${{ env.spack_updater_changes == 'true' }}
       shell: bash
       env:
@@ -80,32 +55,15 @@ runs:
         BRANCH_AGAINST: ${{ inputs.local_branch }}
         package: ${{ inputs.package }}
         repo: ${{ inputs.repo }}
-      run: |
-          printf "GitHub Actor: ${GITHUB_ACTOR}\n"
-          export BRANCH_FROM="update-package/${package}-$(date '+%Y-%m-%d')"
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git branch
-          git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
-          git branch
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
-          repo_path=$(realpath "${repo}")
-          tree ${repo_path}
-          repo_path=${repo_path}/packages/${package}
-          git add $repo_path/*
-          if git diff-index --quiet HEAD --; then
-              printf "No changes\n"
-          else
-              printf "Changes\n"
-              git commit -m "Automated deployment to update package ${package} $(date '+%Y-%m-%d')"
-              git push origin "${BRANCH_FROM}"
-              echo "open_pr=1" >> $GITHUB_ENV
-          fi
-          echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
-
-    - name: Open Pull Request
+        action_path: ${{ github.action_path }}
+      run: /bin/bash ${action_path}/scripts/package_pull_request.sh
+      
+    - name: Pull Request Issue
       if: ${{ env.open_pr != '' }}
-      uses: vsoch/pull-request-action@1.0.19
+      shell: bash
       env:
+        GITHUB_ACTOR: ${{ inputs.user }}
         GITHUB_TOKEN: ${{ inputs.token }}
-        PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
+        package: ${{ inputs.package }}
+        action_path: ${{ github.action_path }}
+      run: python ${action_path}/scripts/open_issue.py
