@@ -287,7 +287,6 @@ class PackageDiffer:
         elif last_modified_here > last_modified_spack:
             self.set_changes("spack_updater_to_spack")
 
-
     def stage_changes(self, src, dst):
         """
         Stage changes here
