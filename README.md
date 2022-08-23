@@ -7,34 +7,22 @@ and compare it for differences with upstream spack.
 2. If the files differ and the local change is more recent, a PR is done to spack. See below for how this is done.
 3. The same is applied for changes to associates files in the package directory.
 
-We can also detect the cases where a package is newly added to spack or the repository.
-However, since we cannot tell if absence / addition of a supplementary file means
-it was actually added locally or deleted upstream, we instead take a more conservative
-approach to just look for changes in the files. E.g., any deletion/addition of a supplementary
-file usually means an update to the package.py.
+**under development**
 
 ### How do we update to spack?
 
 We can't do a pull request to a different repository programatically without a
 personal access token, which @vsoch doesn't like to provide, even scoped.
 
-Thus, the way we are going to do the pull request is a bit of a trick, and manually done.
-The workflow will be intended to be run on a merge to a main branch, and when it detects
-changes, it will open an issue on itself (we cannot open issues on other repos)
-that will provide a link for a human to open the issue, and opening the issue
-on the subsequent repository will trigger the building workflow.
-
-Given that the pull request trigger detects a changed workflow, we comment
-back to the pull request a link to open a pull request to the upstream that will
-trigger a workflow there to do the update.
+Thus, we push to a branch here, and then open an issue on the repository here with
+a link to open a pull request. The pull request is open by a user, but the updates and
+branch automation are handled by the action.
 
 TLDR: This should ensure that local changes to a package.py file and associated assets
 are generally synced. It's recommended to do this in unision with ensuring the package
 still builds. This can be done with the [pakages spack builder](https://syspack.github.io/pakages/).
 
 ### Example
-
-*TODO* this will be updated when @vsoch refactors it.
 
 When:
 
