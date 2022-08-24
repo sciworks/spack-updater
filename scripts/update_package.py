@@ -181,14 +181,14 @@ class PackageDiffer:
             )
         return package_dir
 
-    def set_changes(self):
+    def set_changes(self, key="spack_updater_from_spack"):
         """
         Shared function to indicate to running action there are changes (for PR).
         """
         env_file = os.getenv("GITHUB_ENV")
         if env_file:
             with open(env_file, "a") as fd:
-                fd.write("spack_updater_changes=true\n")
+                fd.write(f"{key}=true\n")
 
     def spack_package_dir(self, package_name):
         """
@@ -233,16 +233,14 @@ class PackageDiffer:
 
         # Case 1: package doesn't exist in spack
         if not os.path.exists(spack_package_dir):
+
             request.populate_new_package(os.path.relpath(package_dir, self.repo))
             return request
 
         # For each file in current, compare to spack install
-        # We need to decide if it's an update (to spack) or to here
-        # If the file doesn't exist, it's too hard to tell if it was deleted
-        # so we go by change only, assumming changes in dependency files
-        # also mean changes to the main package.py
-        to_spack = False
-        no_change = True
+        # Keep track of last modified for each
+        last_modified_here = 0
+        last_modified_spack = 0
         for filename in recursive_find(package_dir):
             basename = filename.replace(package_dir, "").strip(os.sep)
             spack_filename = os.path.join(spack_package_dir, basename)
@@ -261,30 +259,47 @@ class PackageDiffer:
                 spack_filename, root=spack_package_dir
             )
             modified_here = self.git_modified_time(filename, root=package_dir)
+
             if modified_spack == modified_here:
                 continue
             if modified_spack > modified_here:
                 print(
                     f"File {spack_filename} is more recently modified in spack: {modified_spack} > {modified_here}"
                 )
-                to_spack = True
-                no_change = False
-                break
+                # We don't have a last modified or new file is more recently modified
+                if not last_modified_spack or modified_spack > last_modified_spack:
+                    last_modified_spack = modified_spack
 
-            if modified_here > modified_spack:
+            elif modified_here > modified_spack:
                 print(
                     f"File {filename} is more recently modified here: {modified_here} > {modified_spack}"
                 )
-                no_change = False
-                break
+                if not last_modified_here or modified_here > last_modified_here:
+                    last_modified_here = modified_here
 
-        if to_spack:
-            request.populate_update_package(os.path.relpath(package_dir, self.repo))
-            return request
+        # Final decision based on most recently modified
+        # Spack changes are newer
+        if last_modified_spack > last_modified_here:
+            self.stage_changes(spack_package_dir, package_dir)
+            self.set_changes("spack_updater_from_spack")
 
-        # Updates here
-        elif not to_spack and not no_change:
-            self.set_changes()
+        # Local changes are newer
+        elif last_modified_here > last_modified_spack:
+            self.set_changes("spack_updater_to_spack")
+
+    def stage_changes(self, src, dst):
+        """
+        Stage changes here
+        """
+        for filename in recursive_find(src):
+            basename = filename.replace(src, "").strip(os.sep)
+            to_filename = os.path.join(dst, basename)
+            if os.path.exists(to_filename):
+                os.remove(to_filename)
+            dest_dir = os.path.dirname(to_filename)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+            shutil.copyfile(filename, to_filename)
 
     def clone(self, upstream, branch=None):
         """
@@ -337,9 +352,7 @@ def main():
     print("        repo: %s" % args.repo)
 
     cli = PackageDiffer(args.repo, args.upstream)
-    request = cli.diff(args.package)
-    if request:
-        request.submit()
+    cli.diff(args.package)
     cli.cleanup()
 
 

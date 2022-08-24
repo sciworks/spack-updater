@@ -46,8 +46,9 @@ runs:
           $cmd
       shell: bash
 
+    # Case 1: changes from local TO spack pushes to a branch -> issue -> open PR
     - name: Create Update Branch
-      if: ${{ env.spack_updater_changes == 'true' }}
+      if: ${{ env.spack_updater_to_spack == 'true' }}
       shell: bash
       env:
         GITHUB_ACTOR: ${{ inputs.user }}
@@ -56,10 +57,10 @@ runs:
         package: ${{ inputs.package }}
         repo: ${{ inputs.repo }}
         action_path: ${{ github.action_path }}
-      run: /bin/bash ${action_path}/scripts/package_pull_request.sh
+      run: /bin/bash ${action_path}/scripts/branch_pull_request_to_spack.sh
       
     - name: Pull Request Issue
-      if: ${{ env.open_pr != '' }}
+      if: ${{ env.open_pr_to_spack != '' }}
       shell: bash
       env:
         GITHUB_ACTOR: ${{ inputs.user }}
@@ -67,3 +68,22 @@ runs:
         package: ${{ inputs.package }}
         action_path: ${{ github.action_path }}
       run: python ${action_path}/scripts/open_issue.py
+
+    # Case 2: changes from spack TO here stages for 
+    - name: Pull request changes
+      if: ${{ env.spack_updater_from_spack == 'true' }}
+      shell: bash
+      env:
+        GITHUB_ACTOR: ${{ inputs.user }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        BRANCH_AGAINST: ${{ inputs.local_branch }}
+        package: ${{ inputs.package }}
+        repo: ${{ inputs.repo }}
+      run: /bin/bash ${action_path}/scripts/branch_pull_request_to_local.sh
+
+    - name: Open Pull Request
+      if: ${{ env.open_pr_to_here != '' }}
+      uses: vsoch/pull-request-action@1.0.19
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
