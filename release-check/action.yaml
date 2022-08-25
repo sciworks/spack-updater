@@ -13,11 +13,14 @@ inputs:
 
 outputs:
   version:
-    description: "Random number"
+    description: "New version"
     value: ${{ steps.check.outputs.version }}
   package:
-    description: "Random number"
+    description: "Package with version (to install or test build)"
     value: ${{ steps.check.outputs.package }}
+  digest:
+    description: "Digest of new release"
+    value: ${{ steps.check.outputs.digest }}
 
 runs:
   using: "composite"

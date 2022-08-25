@@ -47,9 +47,12 @@ jobs:
         env:
          version: ${{ steps.check.outputs.version }}
          package: ${{ steps.check.outputs.package }}
+         digest: ${{ steps.check.outputs.digest }}
         run: |
           echo ${package}
           echo ${version}
+          echo ${digest}
+          cat packages/${{ matrix.package[0] }}/package.py
 
   test-build:
     name: Test Package Build

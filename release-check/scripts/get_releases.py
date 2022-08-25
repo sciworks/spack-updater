@@ -52,7 +52,7 @@ def download_release(repo, tag, package, naked_version, download_path):
 
 
 def download_archive(repo, naked_version, download_path):
-    tarball_url = f"https://github.com/{repo}/archive/refs/tags/{naked-version}.tar.gz"
+    tarball_url = f"https://github.com/{repo}/archive/refs/tags/{naked_version}.tar.gz"
     print(tarball_url)
     response = requests.get(tarball_url, stream=True)
     if response.status_code == 200:
@@ -105,7 +105,7 @@ def update_package(package_dir, latest, repo):
     write_file(naked_version, version_file)
     shutil.rmtree(tmp)
     print(f"::set-output name=package::{package}@{naked_version}")
-
+    print(f"::set-output name=digest::{digest}")
 
 def write_file(data, filename):
     """
