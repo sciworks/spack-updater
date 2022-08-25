@@ -34,11 +34,11 @@ It might look like this:
 ├── README.md
 └── repo.yaml
 ```
+
 The only addition to the core packages is the addition of a VERSION file in
-the package directory with the latest spack version. While we *could* parse
-this from the package.py, due to subtle differences in package.py format
-it's easier to do it this way (for now)! If you'd like to submit a pull
-request to the action to deem this file unnecessary, please do!
+the package directory with the latest package version, which as of updates 8/25 is no longer
+necessary. However, if your package has a strange format and we can't derive the latest
+version from the package.py online, you can add this file and it will self-update.
 
 ### Why this organization?
 
@@ -194,10 +194,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: ${{ matrix.package }}
           repo: flux-framework/${{ matrix.package }}
+          pull_request: true # default
+          test_build: true   # default
 ...
 ```
 
-See [the rest of the workflow file](https://github.com/flux-framework/spack/blob/main/.github/workflows/check-release.yaml)
+If you don't define the repo, it will be derived from the package.py url. Also note that to get releases,
+we currently only support GitHub, however if you have releases somewhere else, please open an issue
+and we can add support. By default we will also derive the latest version from the first
+we see in the package.py file, and if you have trouble with this, you can add a `VERSION` file manually
+to specify the current. See [the rest of the workflow file](https://github.com/flux-framework/spack/blob/main/.github/workflows/check-release.yaml)
 for testing the new build and then opening a pull request with changes.
 
 ### Spack Updater

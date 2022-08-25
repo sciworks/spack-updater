@@ -4,20 +4,39 @@ inputs:
   token:
     description: GitHub token
     required: true
+  test_build:
+    description: test the build of the package
+    required: false
+    default: true
+  pull_request:
+    description: open a pull request if a new release is found
+    required: false
+    default: true
   package:
     description: name of package in packages folder
     required: true
   repo:
-    description: repository with package releases
-    required: true
+    description: repository with package releases, can be derived from package url
+    required: false
+  dry_run:
+    description: don't update the file (dry run only)
+    required: false
+    default: false
+  branch:
+    description: branch to open pull request to
+    required: false
+    default: main
 
 outputs:
   version:
-    description: "Random number"
+    description: "New version"
     value: ${{ steps.check.outputs.version }}
   package:
-    description: "Random number"
+    description: "Package with version (to install or test build)"
     value: ${{ steps.check.outputs.package }}
+  digest:
+    description: "Digest of new release"
+    value: ${{ steps.check.outputs.digest }}
 
 runs:
   using: "composite"
@@ -27,7 +46,106 @@ runs:
       env:
         package: ${{ inputs.package }}
         repo: ${{ inputs.repo }}
+        dry_run: ${{ inputs.dry_run }}
         GITHUB_TOKEN: ${{ inputs.token }}
         action_path: ${{ github.action_path }}
-      run: python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
+      run: |
+        cmd="python ${action_path}/scripts/get_releases.py"
+        if [ "${repo}" != "" ]; then
+            cmd="${cmd} --repo ${repo}"
+        fi
+        if [ "${dry_run}" == "true" ]; then
+            cmd="${cmd} --dry-run"
+        fi
+        cmd="${cmd} packages/${package}"
+        printf "${cmd}\n"
+        $cmd
       shell: bash
+
+    - name: Install Spack
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      run: |
+        git clone --depth 1 https://github.com/spack/spack /opt/spack
+        echo "/opt/spack/bin" >> $GITHUB_PATH
+        export PATH="/opt/spack/bin:$PATH"
+        spack external find
+      shell: bash
+
+    - name: Derive Microarchitecture
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      run: |
+        pip install archspec
+        runner_cpu=$(archspec cpu)
+        echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Clingo Cache
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      uses: actions/cache@v3
+      with:
+        path: /opt/spack/opt/spack
+        key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
+
+    - name: Install Clingo
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      run: spack install clingo
+      shell: bash
+
+    - name: ${{ inputs.package }} Build Cache
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      uses: actions/cache@v3
+      with:
+        path: /opt/spack/opt/spack
+        key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
+
+    - name: Install pakages
+      if: steps.check.outputs.version != ''
+      run: pip install pakages[all]
+      shell: bash
+
+    - name: ${{ inputs.package }} Spack Build
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+      uses: syspack/pakages/action/install@main
+      with:
+        user: ${{ github.actor }}
+        token: ${{ inputs.token }}
+        builder: spack
+        package: ${{ steps.check.outputs.package }}
+        repo: .
+
+    - name: Commit latest release version
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
+      env:
+        package: ${{ inputs.package }}
+        version: ${{ steps.check.outputs.version }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        echo "Found new version ${version}"
+        echo "::group::${package} package.py"
+        cat packages/${package}/package.py
+        echo "::endgroup::"      
+        export BRANCH_FROM="release/${package}-${version}"
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git branch
+        git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
+        git branch
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@users.noreply.github.com"
+        git add packages/*
+        if git diff-index --quiet HEAD --; then
+            printf "No changes\n"
+        else
+           printf "Changes\n"
+           today=$(date '+%Y-%m-%d')
+           git commit -a -m "Automated deployment to update ${package} versions ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
+           git push origin "${BRANCH_FROM}"
+        fi
+        echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
+      shell: bash
+        
+    - name: Open Pull Request
+      if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
+      uses: vsoch/pull-request-action@1.0.12
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        PULL_REQUEST_BRANCH: ${{ inputs.branch }}
