@@ -1,0 +1,33 @@
+name: "spack updater action release check"
+description: "Check for updated releases"
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  package:
+    description: name of package in packages folder
+    required: true
+  repo:
+    description: repository with package releases
+    required: true
+
+outputs:
+  version:
+    description: "Random number"
+    value: ${{ steps.check.outputs.version }}
+  package:
+    description: "Random number"
+    value: ${{ steps.check.outputs.package }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check for New Releases
+      id: check
+      env:
+        package: ${{ inputs.package }}
+        repo: ${{ inputs.repo }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+        action_path: ${{ github.action_path }}
+      run: python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
+      shell: bash
