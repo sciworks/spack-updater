@@ -16,8 +16,13 @@ jobs:
           repository: researchapps/spack
           push: false
 
-  test-build:
-    name: Test Package Builds
+        # hack to ensure action can complete
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+
+  test-release-check:
+    name: Test Release Checker
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -25,10 +30,26 @@ jobs:
 
       - name: Look for rust updates
         uses: ./release-check
+        id: check
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: rust
           repo: rust-lang/rust
+
+      - name: Check Output
+        env:
+         version: ${{ steps.check.outputs.version }}
+         package: ${{ steps.check.outputs.package }}
+        run: |
+          echo ${package}
+          echo ${version}
+
+  test-build:
+    name: Test Package Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Test Build
         uses: ./build

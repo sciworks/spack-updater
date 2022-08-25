@@ -40,7 +40,7 @@ def get_latest_release(repo):
     return response.json()[0]
 
 
-def update_package(package_dir, latest):
+def update_package(package_dir, latest, repo):
     """
     Write the new package version to file
     """
@@ -55,7 +55,7 @@ def update_package(package_dir, latest):
     download_path = os.path.join(tmp, "%s-%s.tar.gz" % (package, tag))
     version_file = os.path.join(package_dir, "VERSION")
 
-    tarball_url = f"https://github.com/flux-framework/{package}/releases/download/{tag}/{package}-{naked_version}.tar.gz"
+    tarball_url = f"https://github.com/{repo}/releases/download/{tag}/{package}-{naked_version}.tar.gz"
     response = requests.get(tarball_url, stream=True)
     if response.status_code == 200:
         with open(download_path, "wb") as f:
@@ -121,7 +121,7 @@ def check_for_releases(package_dir, repo):
         print("No new version found.")
         return
     print(f"New version {tag} detected!")
-    update_package(package_dir, latest)
+    update_package(package_dir, latest, repo)
     print(f"::set-output name=version::{tag}")
 
 
