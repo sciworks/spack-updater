@@ -24,11 +24,13 @@ runs:
   using: "composite"
   steps:
     - name: Checkout Repository
-    - uses: actions/checkout@v3
+      uses: actions/checkout@v3
       if: ${{ inputs.repository == '' }}
       with:
         ref: ${{ inputs.local_branch }}
-    - uses: actions/checkout@v3
+
+    - name: Checkout Repository
+      uses: actions/checkout@v3
       if: ${{ inputs.repository != '' }}
       with:
         repository: ${{ inputs.repository }} 
