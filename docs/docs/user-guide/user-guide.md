@@ -58,9 +58,21 @@ For each action, examples are provided that are being used actively for flux-fra
 Importantly, we want to always test that our packages build against the develop build of spack.
 This means we want to test a matrix of builds nightly, or on any pull request that changes a package file. This is done by way of a
 [.github/workflows/test-build.yaml](https://github.com/flux-framework/spack/blob/main/.github/workflows/test-build.yaml) workflow. The only thing you
-need to update here is the list of your packages under the matrix:
+need to update here is the list of your packages under the matrix. Here is what the complete workflow might look like:
 
 ```yaml
+name: Test Build
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'packages/**'
+  
+  schedule:
+    - cron:  '0 4 * * *'  
+
 jobs:
   package-builds:
     name: Test Package Builds
@@ -70,6 +82,16 @@ jobs:
       matrix:
         # Here are the names you'll want to edit
         package: [flux-core, flux-sched, flux-pmix]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Test Build
+        uses: sciworks/spack-updater/build@add/upstream
+        with:
+          user: ${{ github.actor }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ matrix.package }}          
 ```
 
 Those names should correspond to package folders in [packages](https://github.com/flux-framework/spack/blob/main/packages). If you are interested,
@@ -125,6 +147,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+In the above, we get updates nightly, or on demand with a workflow dispatch.
+
 ### Look for New Releases
 
 If you maintain packages on GitHub, we use the releases API to (also nightly) check to see if there is a new release.
@@ -140,6 +164,41 @@ the spack updater action, discussed next, will prepare to open a pull request to
 
 **Important** checking for new releases is currently only supported for GitHub releases. If you have another
 package release type with an API that could be supported, please open an issue and it can be added.
+This workflow requires opening a pull request, and we haven't simplified it down to one simple
+action, so to see usage you should look at [.github/workflows/check-release.yaml](https://github.com/flux-framework/spack/blob/main/.github/workflows/check-release.yaml).
+The action to look for new releases (the first part of the workflow to derive the release and update the file) might just look like this:
+
+```yaml
+name: Update with Latest Release
+on:
+  # Ensure we can trigger on demand
+  workflow_dispatch:
+
+  # schedule runs on default branch
+  schedule:
+    - cron:  '0 2 * * *'
+
+jobs:
+  get-release-version:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        package: [flux-core, flux-sched, flux-pmix]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update Version
+        uses: sciworks/spack-updater/release-check@main
+        id: check
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ matrix.package }}
+          repo: flux-framework/${{ matrix.package }}
+...
+```
+
+See [the rest of the workflow file](https://github.com/flux-framework/spack/blob/main/.github/workflows/check-release.yaml)
+for testing the new build and then opening a pull request with changes.
 
 ### Spack Updater
 
@@ -150,5 +209,6 @@ and spack develop, and:
  - Given changes here, a branch is prepared to pull request to spack, and an issue opned you can click to open the PR (e.g, [see this example](https://github.com/spack/spack/pull/32320))
  - If there are changes to spack, it will instead open a pull request here (the less likely case if you do most development here, but not impossible!)
 
+And the workflow (given the two cases) [might look like this](https://github.com/flux-framework/spack/blob/main/.github/workflows/spack-updater.yaml).
 And that's it! Please don't hesitate to ask a question or suggest a change for any of these workflows.
 They are fairly new and we are excited to make them better!

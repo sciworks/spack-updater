@@ -18,6 +18,13 @@ In order for the action to open a pull request against spack, we need to prepare
 the branch. Having a fork of spack handy to do this (that you can then open
 a pull request easily from) is essential.
 
+### How does *thing* work?
+
+The actions are composite actions, meaning a series of steps in the spack-updater
+repository! Thus, if you are curious about how things work, we reccommend you
+[explore the repository](https://github.com/sciworks/spack-updater), specifically
+finding information about steps and variables in `action.yaml` files and feel free to ask questions!
+
 ### I have an idea! How do I share it?
 
 Great! These actions exist to help maintainers, and contributors, and if you
