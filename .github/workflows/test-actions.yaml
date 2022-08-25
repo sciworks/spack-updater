@@ -1,0 +1,51 @@
+name: Test Actions
+on:
+  pull_request: []
+
+jobs:
+  update-spack:
+    name: Check for updates from upstream spack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update with Upstream
+        uses: ./upstream
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: researchapps/spack
+          push: false
+
+#  test-action:
+#    name: Test Action Update To Spack
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v3
+#      - name: Test Parse Issue
+#        run: |
+#          pip install -r requirements.txt
+#          python parse-issue/scripts/parse_issue.py new-issue.txt
+
+#      - name: Spack Update
+#        uses: ./
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          user: ${{ github.actor }}
+#          repo: .
+#          package: zlib
+#          upstream: https://github.com/researchapps/spack
+          
+#  test-action-from-spack:
+#    name: Test New Package From Spack
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout Repository
+#        uses: actions/checkout@v3
+
+#      - name: Test Adding New Package
+#        uses: ./
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          user: ${{ github.actor }}
+#          repo: .
+#          package: m4
+#          upstream: https://github.com/researchapps/spack

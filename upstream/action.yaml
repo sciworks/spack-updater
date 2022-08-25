@@ -12,16 +12,33 @@ inputs:
     description: local branch to sync with upstream (defaults to develop).
     required: true
     default: develop
+  push:
+    description: Push updates to local branch
+    required: false
+    default: true
+  repository:
+    description: Repository to check out (defaults to local repository)
+    required: false
 
 runs:
   using: "composite"
   steps:
     - name: Checkout Repository
+
       uses: actions/checkout@v3
+      if: ${{ inputs.repository == "" }}
       with:
         ref: ${{ inputs.local_branch }}
+
+      uses: actions/checkout@v3
+      if: ${{ inputs.repository != "" }}
+      with:
+        repository: ${{ inputs.repository }} 
+        ref: ${{ inputs.local_branch }}
+
     - name: Update Spack Upstream
       env:
+        push: ${{ inputs.push }}
         local_branch: ${{ inputs.local_branch }}
         branch: ${{ inputs.branch }}
         GITHUB_TOKEN: ${{ inputs.token }}
@@ -33,5 +50,11 @@ runs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@users.noreply.github.com"
           git pull upstream ${branch}
-          git push origin ${local_branch}
+          if [ "${push}" == "true" ]; then
+              printf "Pushing updates to ${local_branch}\n"
+              git push origin ${local_branch}
+          else:
+              printf "Not pushing updates to ${local_branch}\n"
+              git status
+          fi
       shell: bash
