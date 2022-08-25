@@ -7,6 +7,7 @@
   - [Testing Builds](#testing-builds)
   - [Update Upstream](#update-upstream)
   - [Look for New Releases](#look-for-new-releases)
+  - [Spack Updater](#spack-updater)
 
 This is the user guide for the actions! To see how to setup your own spack updater repository,
 see the Developer Guide.
@@ -73,6 +74,27 @@ jobs:
 
 Those names should correspond to package folders in [packages](https://github.com/flux-framework/spack/blob/main/packages). If you are interested,
 [here is an example](https://github.com/flux-framework/spack/actions/runs/2916603405) of a nightly build running.
+
+#### Why do we cache?
+
+You'll notice that we cache both clingo and the package build, and it's based on the micro-architecture of the runner.
+The reason is that different runners can produce different hashes, so if we only generate one cache it will be missed
+about 3/4 of the time (the spack directory generated will have a different name). But the cache is great - by caching
+clingo, it saves us about 22 minutes, and then for a long package build, it can reduce 45-55 minutes down to maybe 5
+(depending on the changes in your packages that might warrant an update).
+
+#### How are the builds done?
+
+The builds are done by way of the [pakages](https://syspack.github.io/pakages/) action, which is what
+makes it possible to run a command like:
+
+```bash
+$ pakages --builder spack build zlib
+```
+
+And then use the repository in the present working directory. Pakages also is optimized to push
+to GitHub packages (as a build cache) so [check out the library and actions](https://syspack.github.io/pakages/getting_started/user-guide.html)
+if you are interested! 
 
 ### Update Upstream
 
