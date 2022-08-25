@@ -80,7 +80,6 @@ runs:
       with:
         path: /opt/spack/opt/spack
         key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
-      shell: bash
 
     - name: Install Clingo
       if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
@@ -93,7 +92,6 @@ runs:
       with:
         path: /opt/spack/opt/spack
         key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
-      shell: bash
 
     - name: Install pakages
       if: steps.check.outputs.version != ''
