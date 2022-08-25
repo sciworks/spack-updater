@@ -56,6 +56,7 @@ def update_package(package_dir, latest, repo):
     version_file = os.path.join(package_dir, "VERSION")
 
     tarball_url = f"https://github.com/{repo}/releases/download/{tag}/{package}-{naked_version}.tar.gz"
+    print(tarball_url)
     response = requests.get(tarball_url, stream=True)
     if response.status_code == 200:
         with open(download_path, "wb") as f:

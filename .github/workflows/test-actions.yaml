@@ -15,6 +15,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: researchapps/spack
           push: false
+          allow_fail: true
 
         # hack to ensure action can complete
       - name: Checkout Repository
