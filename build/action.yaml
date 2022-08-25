@@ -4,7 +4,7 @@ inputs:
   token:
     description: GitHub token
     required: true
-  actor:
+  user:
     description: GitHub actor
     required: true
   package:
@@ -52,7 +52,7 @@ runs:
    - name: ${{ inputs.package }} Spack Build
      uses: syspack/pakages/action/install@main
      with:
-        user: ${{ inputs.actor }}
+        user: ${{ inputs.user }}
         token: ${{ inputs.token }}
         builder: spack
         package: ${{ inputs.package }}
