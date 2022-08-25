@@ -75,8 +75,7 @@ class PackageUpdater:
 
                 # This is hacky, we can make it better :)
                 if not self.repo:
-                    repo = self.download_url.rsplit("/", 2)[0].split("//github.com")[-1]
-                    print(repo)
+                    repo = self.download_url.rsplit("/", 2)[0].split("//github.com")[-1].strip('/')
                     self.repo = "/".join(repo.split("/")[0:2]).strip("/")
                     print(f"Setting repo to {self.repo}")
 
