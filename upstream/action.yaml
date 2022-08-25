@@ -16,6 +16,10 @@ inputs:
     description: Push updates to local branch
     required: false
     default: true
+  allow_fail:
+    description: Allow pull of upstream branch to fail (defaults to false)
+    required: false
+    default: false
   repository:
     description: Repository to check out (defaults to local repository)
     required: false
@@ -37,6 +41,7 @@ runs:
         ref: ${{ inputs.local_branch }}
     - name: Update Spack Upstream
       env:
+        allow_fail: ${{ inputs.allow_fail }}
         push: ${{ inputs.push }}
         local_branch: ${{ inputs.local_branch }}
         branch: ${{ inputs.branch }}
@@ -48,7 +53,14 @@ runs:
           git branch
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@users.noreply.github.com"
-          git pull upstream ${branch} || git pull upstream ${branch} --ff-only
+          git pull upstream ${branch} || git pull upstream ${branch} --ff-only || (
+            if [ "${allow_fail}" == "true" ]; then
+                printf "Error pulling upstream, but allow_fail is true\n"           
+            else
+                printf "Error pulling upstream\n"
+                exit 1
+            fi             
+          )
           if [ "${push}" == "true" ]; then
               printf "Pushing updates to ${local_branch}\n"
               git push origin ${local_branch}

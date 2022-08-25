@@ -11,8 +11,8 @@ import os
 # Look for version updates for a package
 # python script/get_releases.py packages/flux-core
 
-master_branch = 'version("master", branch="master")'
-main_branch = 'version("main", branch="main")'
+master_branch = 'version("master", branch="master"'
+main_branch = 'version("main", branch="main"'
 
 token = os.environ.get("GITHUB_TOKEN")
 headers = {}
