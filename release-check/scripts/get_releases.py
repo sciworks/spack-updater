@@ -67,6 +67,7 @@ class PackageUpdater:
                 self.download_url = (
                     line.replace(" ", "").split("url=")[-1].strip('"').strip("'")
                 )
+                print(f"Setting download url to {self.download_url}")
                 if not self.repo and "github.com" not in self.download_url:
                     sys.exit(
                         "We currently only support release updated for GitHub, please open an issue with your setup!"
@@ -79,6 +80,7 @@ class PackageUpdater:
                         .split("//github.com")[-1]
                         .strip("/")
                     )
+                    print(f"Setting repo to {self.repo}")
 
             if not self._current_version and "version(" in line and "sha256" in line:
                 current_version = line.strip().split(" ")[0]
