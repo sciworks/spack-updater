@@ -29,7 +29,7 @@ jobs:
       max-parallel: 4
       matrix:
         package: [[alan, mpdunne/alan],
-                  [openslide, openslide/openslide]]
+                  [openslide, ""]]
 
     steps:
       - name: Checkout Repository
@@ -42,6 +42,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: ${{ matrix.package[0] }}
           repo: ${{ matrix.package[1] }}
+          pull_request: false
 
       - name: Check Output
         env:
