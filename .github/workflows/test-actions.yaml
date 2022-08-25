@@ -25,17 +25,23 @@ jobs:
   test-release-check:
     name: Test Release Checker
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        package: [[alan, mpdunne/alan],
+                  [openslide, openslide/openslide]]
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Look for rust updates
+      - name: Look for ${{ matrix.package[0] }} updates
         uses: ./release-check
         id: check
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          package: rust
-          repo: rust-lang/rust
+          package: ${{ matrix.package[0] }}
+          repo: ${{ matrix.package[1] }}
 
       - name: Check Output
         env:

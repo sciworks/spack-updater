@@ -40,6 +40,28 @@ def get_latest_release(repo):
     return response.json()[0]
 
 
+def download_release(repo, tag, package, naked_version, download_path):
+    tarball_url = f"https://github.com/{repo}/releases/download/{tag}/{package}-{naked_version}.tar.gz"
+    print(tarball_url)
+    response = requests.get(tarball_url, stream=True)
+    if response.status_code == 200:
+        with open(download_path, "wb") as f:
+            f.write(response.raw.read())
+        return True
+    return False
+
+
+def download_archive(repo, naked_version, download_path):
+    tarball_url = f"https://github.com/{repo}/archive/refs/tags/{naked-version}.tar.gz"
+    print(tarball_url)
+    response = requests.get(tarball_url, stream=True)
+    if response.status_code == 200:
+        with open(download_path, "wb") as f:
+            f.write(response.raw.read())
+        return True
+    return False
+
+
 def update_package(package_dir, latest, repo):
     """
     Write the new package version to file
@@ -55,12 +77,13 @@ def update_package(package_dir, latest, repo):
     download_path = os.path.join(tmp, "%s-%s.tar.gz" % (package, tag))
     version_file = os.path.join(package_dir, "VERSION")
 
-    tarball_url = f"https://github.com/{repo}/releases/download/{tag}/{package}-{naked_version}.tar.gz"
-    print(tarball_url)
-    response = requests.get(tarball_url, stream=True)
-    if response.status_code == 200:
-        with open(download_path, "wb") as f:
-            f.write(response.raw.read())
+    if not self.download_release(repo, tag, package, naked_version, download_path):
+        self.download_archive(repo, naked_version, download_path)
+
+    if not os.path.exists(download_path):
+        sys.exit(
+            "Failed to download new release! If there isn't support for the archive type, open an issue to request it."
+        )
 
     # Get new digest
     digest = get_sha256sum(download_path)
@@ -140,7 +163,7 @@ def get_parser():
     )
     return parser
 
-    
+
 def main():
 
     parser = get_parser()
@@ -153,6 +176,7 @@ def main():
     print("        repo: %s" % args.repo)
 
     check_for_releases(args.package, args.repo)
+
 
 if __name__ == "__main__":
     main()
