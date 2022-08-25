@@ -1,0 +1,37 @@
+name: "spack updater upstream updater"
+description: "Ensure your develop branch is in sync with spack upstream"
+inputs:
+  token:
+    description: GitHub token
+    required: true
+  branch:
+    description: branch of upstream spack to sync with (defaults to develop).
+    required: true
+    default: develop
+  local_branch:
+    description: local branch to sync with upstream (defaults to develop).
+    required: true
+    default: develop
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.local_branch }}
+    - name: Update Spack Upstream
+      env:
+        local_branch: ${{ inputs.local_branch }}
+        branch: ${{ inputs.branch }}
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+          printf "GitHub Actor: ${GITHUB_ACTOR}\n"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"         
+          git remote add upstream "https://x-access-token:${GITHUB_TOKEN}@github.com/spack/spack.git"         
+          git branch
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git pull upstream ${branch}
+          git push origin ${local_branch}
+      shell: bash
