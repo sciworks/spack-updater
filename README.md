@@ -1,32 +1,31 @@
 # Spack Updater
 
-The spack updater is intended to target a local package.py recipe of interest,
-and compare it for differences with upstream spack.
+This is a set of actions to supplement a fork of spack that will deploy an automated set of workflows to do updates,
+and ensure that changes to your packages OR changes to spack do not break your builds.
+This means that:
 
-1. If the files differ and the upstream is changed more recent, a PR is done to the branch here for it.
-2. If the files differ and the local change is more recent, a PR is done to spack. See below for how this is done.
-3. The same is applied for changes to associates files in the package directory.
+1. We have a main branch that is an orphan from spack develop
+2. Spack develop is updated from upstream nightly
+3. The packages in your main branch can be worked on, are automatically updated, and builds are always tested.
 
-**under development**
+Or in short terms, you can maintain your spack packages in one simple place,
+and the automation will support you to update the package versions, test builds
+with updates (and nightly) and assist with opening pull requests to spack.
 
-### How do we update to spack?
+Interested to create your own, or see how it works? Check out:
 
-We can't do a pull request to a different repository programatically without a
-personal access token, which @vsoch doesn't like to provide, even scoped.
+ - ⭐️ [Spack Updater Documentation](https://sciworks.github.io/spack-updater/) ⭐️.
+ - 🌀️ [Flux Framework Example](https://github.com/flux-framework/spack/) 🌀️
 
-Thus, we push to a branch here, and then open an issue on the repository here with
-a link to open a pull request. The pull request is open by a user, but the updates and
-branch automation are handled by the action.
 
-TLDR: This should ensure that local changes to a package.py file and associated assets
-are generally synced. It's recommended to do this in unision with ensuring the package
-still builds. This can be done with the [pakages spack builder](https://syspack.github.io/pakages/).
+## License
 
-### Example
+This project is in support of [Flux Framework](https://github.com/flux-framework/flux-core), with release:
+ - SPDX-License-Identifier: LGPL-3.0
+ - LLNL-CODE-764420
 
-When:
-
- 1. Here is an example of an issue that is opened with a branch to PR: [https://github.com/spack/spack/pull/32320](https://github.com/spack/spack/pull/32320)
- 2. And the pull request I could open [https://github.com/spack/spack/pull/32320](https://github.com/spack/spack/pull/32320)
-
-See [https://github.com/flux-framework/spack](https://github.com/flux-framework/spack) for an example of using the action.
+And [Spack](https://github.com/spack/spack):
+ - SPDX-License-Identifier: (Apache-2.0 OR MIT)
+ - LLNL-CODE-811652
+ 
+See the respective repositories for details.
