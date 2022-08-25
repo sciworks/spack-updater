@@ -48,7 +48,7 @@ runs:
           git branch
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@users.noreply.github.com"
-          git pull upstream ${branch}
+          git pull upstream ${branch} || git pull upstream ${branch} --ff-only
           if [ "${push}" == "true" ]; then
               printf "Pushing updates to ${local_branch}\n"
               git push origin ${local_branch}

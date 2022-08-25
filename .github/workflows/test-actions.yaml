@@ -19,20 +19,23 @@ jobs:
   test-build:
     name: Test Package Builds
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        package: [zlib]
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Look for rust updates
+        uses: ./release-check
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: rust
+          repo: rust-lang/rust
+
       - name: Test Build
         uses: ./build
         with:
           user: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          package: ${{ matrix.package }}
+          package: zlib
 
 #  test-action:
 #    name: Test Action Update To Spack
