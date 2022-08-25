@@ -22,6 +22,7 @@ runs:
         ref: ${{ inputs.local_branch }}
     - name: Update Spack Upstream
       env:
+        local_branch: ${{ inputs.local_branch }}
         branch: ${{ inputs.branch }}
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
@@ -31,7 +32,7 @@ runs:
           git branch
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@users.noreply.github.com"
-          git pull upstream develop
-          git push origin develop
+          git pull upstream ${branch}
+          git push origin ${local_branch}
       shell: bash
      
