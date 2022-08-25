@@ -64,6 +64,7 @@ jobs:
           user: ${{ github.actor }}
           token: ${{ secrets.GITHUB_TOKEN }}
           package: zlib
+          repo: .
 
 #  test-action:
 #    name: Test Action Update To Spack
