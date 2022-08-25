@@ -35,4 +35,3 @@ runs:
           git pull upstream ${branch}
           git push origin ${local_branch}
       shell: bash
-     
