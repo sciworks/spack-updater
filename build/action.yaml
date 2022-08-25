@@ -56,4 +56,4 @@ runs:
         token: ${{ inputs.token }}
         builder: spack
         package: ${{ inputs.package }}
-          repo: .
+        repo: .
