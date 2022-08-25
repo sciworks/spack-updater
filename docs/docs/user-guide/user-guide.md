@@ -73,7 +73,9 @@ jobs:
 ```
 
 Those names should correspond to package folders in [packages](https://github.com/flux-framework/spack/blob/main/packages). If you are interested,
-[here is an example](https://github.com/flux-framework/spack/actions/runs/2916603405) of a nightly build running.
+[here is an example](https://github.com/flux-framework/spack/actions/runs/2916603405) of a nightly build running, and you
+can mimic the logic in [.github/workflows/test-build.yaml](https://github.com/flux-framework/spack/blob/main/.github/workflows/test-build.yaml) 
+to make a matrix and use caches before the action.
 
 #### Why do we cache?
 
@@ -102,7 +104,26 @@ When we create a new branch with a package update to prepare to open a pull requ
 it's important that it's updated! It also doesn't look good to have a develop branch that is severely behind.
 To support this, we have the [.github/workflows/upstream-update.yaml](https://github.com/flux-framework/spack/blob/main/.github/workflows/upstream-update.yaml)
 workflow, which you can copy and use as is. If you are interested, [here is an example](https://github.com/flux-framework/spack/actions/runs/2916613894)
-of it running. It will run nightly.
+of it running. It will run nightly, or at the frequency you desire! Here is an example to update your develop with spack develop (and see the [action.yaml](https://github.com/sciworks/spack-updater/tree/main/upstream/action.yaml)
+for additional variables.
+
+```yaml
+name: Spack Upstream Updater
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '5 4 * * *'
+
+jobs:
+  update-spack:
+    name: Pull updates from upstream spack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update with Upstream
+        uses: sciworks/spack-updater/upstream@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+```
 
 ### Look for New Releases
 
