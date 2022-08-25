@@ -18,6 +18,7 @@ inputs:
   repo:
     description: repository with package releases, can be derived from package url
     required: false
+    default: .
   dry_run:
     description: don't update the file (dry run only)
     required: false

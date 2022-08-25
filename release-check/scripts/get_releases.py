@@ -266,6 +266,10 @@ def main():
     print("        repo: %s" % args.repo)
     print("     dry-run: %s" % args.dry_run)
 
+    # Allow the checker to derive repo from the url
+    if args.repo == ".":
+       args.repo = None
+
     updater = PackageUpdater(args.package, args.repo, args.dry_run)
     updater.check()
 
