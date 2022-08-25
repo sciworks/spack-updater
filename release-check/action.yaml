@@ -10,6 +10,10 @@ inputs:
   repo:
     description: repository with package releases
     required: true
+  dry_run:
+    description: don't update the file (dry run only)
+    required: false
+    default: false
 
 outputs:
   version:
@@ -30,7 +34,13 @@ runs:
       env:
         package: ${{ inputs.package }}
         repo: ${{ inputs.repo }}
+        dry_run: ${{ inputs.dry_run }}
         GITHUB_TOKEN: ${{ inputs.token }}
         action_path: ${{ github.action_path }}
-      run: python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
+      run: |
+        if [ "${dry_run}" == "true" ]; then
+            python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package} --dry-run
+        else
+            python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
+        fi
       shell: bash
