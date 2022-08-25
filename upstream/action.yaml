@@ -64,7 +64,7 @@ runs:
           if [ "${push}" == "true" ]; then
               printf "Pushing updates to ${local_branch}\n"
               git push origin ${local_branch}
-          else:
+          else
               printf "Not pushing updates to ${local_branch}\n"
               git status
           fi
