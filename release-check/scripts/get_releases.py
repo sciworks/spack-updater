@@ -75,11 +75,8 @@ class PackageUpdater:
 
                 # This is hacky, we can make it better :)
                 if not self.repo:
-                    self.repo = (
-                        self.download_url.rsplit("/", 2)[0]
-                        .split("//github.com")[-1]
-                        .strip("/")
-                    )
+                    repo = self.download_url.rsplit("/", 2)[0].split("//github.com")[-1]
+                    self.repo = "/".join(repo.split("/")[0:2]).strip("/")
                     print(f"Setting repo to {self.repo}")
 
             if not self._current_version and "version(" in line and "sha256" in line:
@@ -270,7 +267,7 @@ def main():
 
     # Allow the checker to derive repo from the url
     if args.repo == ".":
-       args.repo = None
+        args.repo = None
 
     updater = PackageUpdater(args.package, args.repo, args.dry_run)
     updater.check()
