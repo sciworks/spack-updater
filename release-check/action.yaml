@@ -51,7 +51,7 @@ runs:
         action_path: ${{ github.action_path }}
       run: |
         if [ "${dry_run}" == "true" ]; then
-            python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package} --dry-run
+            python ${action_path}/scripts/get_releases.py --repo ${repo} --dry-run packages/${package}
         else
             python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
         fi
