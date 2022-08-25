@@ -77,8 +77,8 @@ def update_package(package_dir, latest, repo):
     download_path = os.path.join(tmp, "%s-%s.tar.gz" % (package, tag))
     version_file = os.path.join(package_dir, "VERSION")
 
-    if not self.download_release(repo, tag, package, naked_version, download_path):
-        self.download_archive(repo, naked_version, download_path)
+    if not download_release(repo, tag, package, naked_version, download_path):
+        download_archive(repo, naked_version, download_path)
 
     if not os.path.exists(download_path):
         sys.exit(
