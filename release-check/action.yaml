@@ -51,8 +51,10 @@ runs:
         action_path: ${{ github.action_path }}
       run: |
         if [ "${dry_run}" == "true" ]; then
+            printf "python ${action_path}/scripts/get_releases.py --repo ${repo} --dry-run packages/${package}\n"
             python ${action_path}/scripts/get_releases.py --repo ${repo} --dry-run packages/${package}
         else
+            printf "python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}\n"
             python ${action_path}/scripts/get_releases.py --repo ${repo} packages/${package}
         fi
       shell: bash
