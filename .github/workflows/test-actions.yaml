@@ -16,6 +16,24 @@ jobs:
           repository: researchapps/spack
           push: false
 
+  test-build:
+    name: Test Package Builds
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        package: [zlib]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Test Build
+        uses: ./build
+        with:
+          user: ${{ github.actor }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ matrix.package }}
+
 #  test-action:
 #    name: Test Action Update To Spack
 #    runs-on: ubuntu-latest
