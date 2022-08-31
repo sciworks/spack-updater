@@ -79,6 +79,7 @@ runs:
         BRANCH_AGAINST: ${{ inputs.local_branch }}
         package: ${{ inputs.package }}
         repo: ${{ inputs.repo }}
+        action_path: ${{ github.action_path }}
       run: /bin/bash ${action_path}/scripts/branch_pull_request_to_local.sh
 
     - name: Open Pull Request
