@@ -131,6 +131,7 @@ runs:
         git branch
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@users.noreply.github.com"
+        git config --global pull.rebase true
         git add packages/*
         if git diff-index --quiet HEAD --; then
             printf "No changes\n"
@@ -142,10 +143,3 @@ runs:
         fi
         echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
       shell: bash
-        
-    - name: Open Pull Request
-      if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
-      uses: vsoch/pull-request-action@1.0.12
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
-        PULL_REQUEST_BRANCH: ${{ inputs.branch }}
