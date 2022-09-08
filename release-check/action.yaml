@@ -141,7 +141,6 @@ runs:
            today=$(date '+%Y-%m-%d')
            git commit -a -m "Automated deployment to update ${package} versions ${today}" -m "Signed-off-by: github-actions <github-actions@users.noreply.github.com>"  
            git push origin "${BRANCH_FROM}"
-          fi
         fi
         echo "PULL_REQUEST_FROM_BRANCH=${BRANCH_FROM}" >> $GITHUB_ENV
       shell: bash
