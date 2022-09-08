@@ -124,8 +124,7 @@ runs:
         echo "::group::${package} package.py"
         cat packages/${package}/package.py
         echo "::endgroup::"      
-        now=$(echo $(date '+%Y-%m-%d'))
-        export BRANCH_FROM="release/${package}-${version}/${now}"
+        export BRANCH_FROM="release/${package}-${version}"
         git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
         git branch
         git checkout -b "${BRANCH_FROM}" || git checkout "${BRANCH_FROM}"
