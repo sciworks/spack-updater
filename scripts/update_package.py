@@ -48,7 +48,7 @@ def get_parser():
     parser.add_argument(
         "--upstream",
         help="repository upstream to update",
-        default="https://github.com/vsoch/spack",
+        default="https://github.com/spack/spack",
     )
     return parser
 
