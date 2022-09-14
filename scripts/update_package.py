@@ -212,6 +212,12 @@ class PackageDiffer:
         """
         Get last modified date or time.
         """
+        # This is the full git commit, for debugging
+        cmd = ["git", "log", "-1", path]
+        p = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE)
+        out, _ = p.communicate()
+        print(out.decode("utf-8").strip()))
+
         # This gives the unix timestamp
         cmd = ["git", "log", "-1", "--pretty=%ct", path]
         p = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE)
