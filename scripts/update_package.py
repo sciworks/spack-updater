@@ -216,7 +216,7 @@ class PackageDiffer:
         cmd = ["git", "log", "-1", path]
         p = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE)
         out, _ = p.communicate()
-        print(out.decode("utf-8").strip()))
+        print(out.decode("utf-8").strip())
 
         # This gives the unix timestamp
         cmd = ["git", "log", "-1", "--pretty=%ct", path]
