@@ -78,6 +78,7 @@ runs:
   - name: Install GNU Fortran
     if: (inputs.fortran == 'true')
     uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
+
   - name: Derive Microarchitecture
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
