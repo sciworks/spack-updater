@@ -54,7 +54,7 @@ runs:
     shell: bash
 
   - name: Install GNU Fortran
-    if: (inputs.fortran == 'true')
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
     uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
   - name: ${{ inputs.package }} Spack Build
