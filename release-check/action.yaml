@@ -66,6 +66,10 @@ runs:
       $cmd
     shell: bash
 
+  - name: Install GNU Fortran
+    if: (inputs.fortran == 'true')
+    uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
+
   - name: Install Spack
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
@@ -74,10 +78,6 @@ runs:
       export PATH="/opt/spack/bin:$PATH"
       spack external find
     shell: bash
-
-  - name: Install GNU Fortran
-    if: (inputs.fortran == 'true')
-    uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
   - name: Update Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)

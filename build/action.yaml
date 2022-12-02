@@ -18,6 +18,10 @@ inputs:
 runs:
   using: composite
   steps:
+  - name: Install GNU Fortran
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
+
   - name: Install Spack
     run: |
       git clone --depth 1 https://github.com/spack/spack /opt/spack
@@ -52,10 +56,6 @@ runs:
   - name: Install pakages
     run: pip install pakages[all]
     shell: bash
-
-  - name: Install GNU Fortran
-    if: (inputs.fortran == 'true' || inputs.fortran == true)
-    uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
   - name: Update Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)
