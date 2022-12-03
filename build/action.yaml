@@ -1,5 +1,5 @@
-name: "spack updater builder"
-description: "Build your spack packages"
+name: spack updater builder
+description: Build your spack packages
 inputs:
   token:
     description: GitHub token
@@ -10,50 +10,78 @@ inputs:
   package:
     description: package to test
     required: true
+  fortran:
+    description: install fortran compiler
+    required: false
+    default: false
+  compiler:
+    description: set a default compiler (only used if fortran set)
+    required: false
+    default: "gcc@11.3.0"
 
 runs:
-  using: "composite"
+  using: composite
   steps:
-   - name: Install Spack
-     run: |
-       git clone --depth 1 https://github.com/spack/spack /opt/spack
-       echo "/opt/spack/bin" >> $GITHUB_PATH
-       export PATH="/opt/spack/bin:$PATH"
-       spack external find
-     shell: bash
+  - name: Install GNU Fortran
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
-   - name: Derive Microarchitecture
-     run: |
-       pip install archspec
-       runner_cpu=$(archspec cpu)
-       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
-     shell: bash
+  - name: Link Gfortran Compiler
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    run: sudo ln -fs /usr/local/bin/gfortran-10 /usr/local/bin/gfortran-12
+    shell: bash
 
-   - name: Clingo Cache
-     uses: actions/cache@v3
-     with:
-       path: /opt/spack/opt/spack
-       key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
+  - name: Install Spack
+    run: |
+      git clone --depth 1 https://github.com/spack/spack /opt/spack
+      echo "/opt/spack/bin" >> $GITHUB_PATH
+      export PATH="/opt/spack/bin:$PATH"
+      spack external find
+    shell: bash
 
-   - name: Install Clingo
-     run: spack install clingo
-     shell: bash
+  - name: View Compilers
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    env:
+      compiler: ${{ inputs.compiler }}
+    run: |
+      spack config add "packages:all:compiler:[${compiler}]"
+      spack compiler find
+      spack compiler list
+      cat ~/.spack/linux/compilers.yaml
+    shell: bash
 
-   - name: ${{ inputs.package }} Build Cache
-     uses: actions/cache@v3
-     with:
-       path: /opt/spack/opt/spack
-       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
+  - name: Derive Microarchitecture
+    run: |
+      pip install archspec
+      runner_cpu=$(archspec cpu)
+      echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
+    shell: bash
 
-   - name: Install pakages
-     run: pip install pakages[all]
-     shell: bash
+  - name: Clingo Cache
+    uses: actions/cache@v3
+    with:
+      path: /opt/spack/opt/spack
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
 
-   - name: ${{ inputs.package }} Spack Build
-     uses: syspack/pakages/action/install@main
-     with:
-        user: ${{ inputs.user }}
-        token: ${{ inputs.token }}
-        builder: spack
-        package: ${{ inputs.package }}
-        repo: .
+  - name: Install Clingo
+    run: spack install clingo
+    shell: bash
+
+  - name: ${{ inputs.package }} Build Cache
+    uses: actions/cache@v3
+    with:
+      path: /opt/spack/opt/spack
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
+
+  - name: Install pakages
+    run: pip install pakages[all]
+    shell: bash
+
+  - name: ${{ inputs.package }} Spack Build
+    uses: syspack/pakages/action/install@main
+    with:
+      user: ${{ inputs.user }}
+      token: ${{ inputs.token }}
+      builder: spack
+      package: ${{ inputs.package }}
+      repo: .
