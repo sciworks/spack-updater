@@ -22,6 +22,14 @@ runs:
     if: (inputs.fortran == 'true' || inputs.fortran == true)
     uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
+  - name: View Compilers
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    run: |
+        spack compiler find
+        spack compiler list
+        cat ~/.spack/linux/compilers.yaml
+    shell: bash
+
   - name: Install Spack
     run: |
       git clone --depth 1 https://github.com/spack/spack /opt/spack
@@ -55,11 +63,6 @@ runs:
 
   - name: Install pakages
     run: pip install pakages[all]
-    shell: bash
-
-  - name: Update Compilers
-    if: (inputs.fortran == 'true' || inputs.fortran == true)
-    run: spack compiler find && spack compiler list
     shell: bash
 
   - name: ${{ inputs.package }} Spack Build
