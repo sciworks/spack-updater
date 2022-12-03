@@ -38,6 +38,7 @@ runs:
   - name: View Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)
     run: |
+      spack config add "packages:all:compiler:[gcc@11.3.0]"
       spack compiler find
       spack compiler list
       cat ~/.spack/linux/compilers.yaml
