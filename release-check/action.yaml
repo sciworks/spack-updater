@@ -70,6 +70,11 @@ runs:
     if: (inputs.fortran == 'true')
     uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
+  - name: Link Gfortran Compiler
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    run: ln -s /usr/local/bin/gfortran /usr/local/bin/gfortran-12
+    shell: bash
+
   - name: Install Spack
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
@@ -79,9 +84,9 @@ runs:
       spack external find
     shell: bash
 
-  - name: Update Compilers
+  - name: View Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)
-    run: spack compiler find && spack compiler list
+    run: cat ~/.spack/linux/compilers.yaml
     shell: bash
 
   - name: Derive Microarchitecture
