@@ -30,6 +30,11 @@ inputs:
     description: install fortran compiler
     required: false
     default: false
+  compiler:
+    description: set a default compiler (only used if fortran set)
+    required: false
+    default: "gcc@11.3.0"
+
 
 outputs:
   version:
@@ -86,13 +91,15 @@ runs:
 
   - name: View Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)
+    env:
+      compiler: ${{ inputs.compiler }}
     run: |
-      spack config add "packages:all:compiler:[gcc@11.3.0]"
+      spack config add "packages:all:compiler:[${compiler}]"
       spack compiler find
       spack compiler list
       cat ~/.spack/linux/compilers.yaml
     shell: bash
-
+    
   - name: Derive Microarchitecture
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
