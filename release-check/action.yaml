@@ -86,7 +86,10 @@ runs:
 
   - name: View Compilers
     if: (inputs.fortran == 'true' || inputs.fortran == true)
-    run: cat ~/.spack/linux/compilers.yaml
+    run: |
+      spack compiler find
+      spack compiler list
+      cat ~/.spack/linux/compilers.yaml
     shell: bash
 
   - name: Derive Microarchitecture
