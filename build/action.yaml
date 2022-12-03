@@ -22,20 +22,20 @@ runs:
     if: (inputs.fortran == 'true' || inputs.fortran == true)
     uses: modflowpy/install-gfortran-action@d1979765a1a46c10711ce70197feb669085e1fd7 # v1.0.1
 
-  - name: View Compilers
-    if: (inputs.fortran == 'true' || inputs.fortran == true)
-    run: |
-        spack compiler find
-        spack compiler list
-        cat ~/.spack/linux/compilers.yaml
-    shell: bash
-
   - name: Install Spack
     run: |
       git clone --depth 1 https://github.com/spack/spack /opt/spack
       echo "/opt/spack/bin" >> $GITHUB_PATH
       export PATH="/opt/spack/bin:$PATH"
       spack external find
+    shell: bash
+
+  - name: View Compilers
+    if: (inputs.fortran == 'true' || inputs.fortran == true)
+    run: |
+        spack compiler find
+        spack compiler list
+        cat ~/.spack/linux/compilers.yaml
     shell: bash
 
   - name: Derive Microarchitecture
