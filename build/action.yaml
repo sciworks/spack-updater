@@ -24,7 +24,7 @@ runs:
 
   - name: Link Gfortran Compiler
     if: (inputs.fortran == 'true' || inputs.fortran == true)
-    run: sudo ln -fs /usr/local/bin/gfortran /usr/local/bin/gfortran-12
+    run: sudo cp /usr/local/bin/gfortran /usr/local/bin/gfortran-12
     shell: bash
 
   - name: Install Spack
