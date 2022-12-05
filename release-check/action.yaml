@@ -81,7 +81,6 @@ runs:
     shell: bash
 
   - name: Install Spack
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
       git clone --depth 1 https://github.com/spack/spack /opt/spack
       echo "/opt/spack/bin" >> $GITHUB_PATH
