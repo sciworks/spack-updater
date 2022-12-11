@@ -46,6 +46,22 @@ def read_file(filename):
     return content
 
 
+def set_env_and_output(name, value):
+    """
+    helper function to echo a key/value pair to output and env.
+
+    Parameters:
+    name (str)  : the name of the environment variable
+    value (str) : the value to write to file
+    """
+    for env_var in ("GITHUB_ENV", "GITHUB_OUTPUT"):
+        environment_file_path = os.environ.get(env_var)
+        print("Writing %s=%s to %s" % (name, value, env_var))
+
+        with open(environment_file_path, "a") as environment_file:
+            environment_file.write("%s=%s\n" % (name, value))
+
+
 class PackageUpdater:
     def __init__(self, package_dir, repo, dry_run=False):
         self.package_dir = package_dir
@@ -75,7 +91,11 @@ class PackageUpdater:
 
                 # This is hacky, we can make it better :)
                 if not self.repo:
-                    repo = self.download_url.rsplit("/", 2)[0].split("//github.com")[-1].strip('/')
+                    repo = (
+                        self.download_url.rsplit("/", 2)[0]
+                        .split("//github.com")[-1]
+                        .strip("/")
+                    )
                     self.repo = "/".join(repo.split("/")[0:2]).strip("/")
                     print(f"Setting repo to {self.repo}")
 
@@ -124,7 +144,7 @@ class PackageUpdater:
             return
         print(f"New version {tag} detected!")
         self.update_package(latest)
-        print(f"::set-output name=version::{tag}")
+        set_env_and_output("version", tag)
 
     def get_latest_release(self):
         """
@@ -164,8 +184,8 @@ class PackageUpdater:
         # Get new digest
         digest = get_sha256sum(download_path)
         shutil.rmtree(tmp)
-        print(f"::set-output name=package::{self.package}@{naked_version}")
-        print(f"::set-output name=digest::{digest}")
+        set_env_and_output("package", f"{self.package}@{naked_version}")
+        set_env_and_output("digest", digest)
         if self.dry_run:
             return
 
