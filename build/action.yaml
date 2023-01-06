@@ -14,6 +14,10 @@ inputs:
     description: install fortran compiler
     required: false
     default: false
+  cache_count:
+    description: cache counter (if you want to reset cache)
+    required: false
+    default: "1"
   compiler:
     description: set a default compiler (only used if fortran set)
     required: false
@@ -61,7 +65,7 @@ runs:
     uses: actions/cache@v3
     with:
       path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo-${{ inputs.cache_count }}
 
   - name: Install Clingo
     run: spack install clingo
@@ -71,13 +75,11 @@ runs:
     uses: actions/cache@v3
     with:
       path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
 
   - name: Install pakages
     run: |
       rm -rf /opt/spack/lib/spack/external/macholib    
-      spack clean -p
-      sudo apt install python3-testresources
       pip install pakages[all]
     shell: bash
 
