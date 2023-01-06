@@ -36,7 +36,7 @@ runs:
       git clone --depth 1 https://github.com/spack/spack /opt/spack
       echo "/opt/spack/bin" >> $GITHUB_PATH
       export PATH="/opt/spack/bin:$PATH"
-      spack external find
+      spack external find     
     shell: bash
 
   - name: View Compilers
@@ -74,7 +74,10 @@ runs:
       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
 
   - name: Install pakages
-    run: pip install pakages[all]
+    run: |
+      rm -rf /opt/spack/lib/spack/external/macholib    
+      spack clean -p
+      pip install pakages[all]
     shell: bash
 
   - name: ${{ inputs.package }} Spack Build
