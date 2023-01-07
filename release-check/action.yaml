@@ -133,7 +133,7 @@ runs:
 
   - name: ${{ inputs.package }} Spack Build
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
-    uses: syspack/pakages/action/install@main
+    uses: syspack/pakages/action/install@try/vanilla-spack
     with:
       user: ${{ github.actor }}
       token: ${{ inputs.token }}

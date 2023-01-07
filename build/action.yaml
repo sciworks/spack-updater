@@ -78,7 +78,7 @@ runs:
       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
 
   - name: ${{ inputs.package }} Spack Build
-    uses: syspack/pakages/action/install@main
+    uses: syspack/pakages/action/install@try/vanilla-spack
     with:
       user: ${{ inputs.user }}
       token: ${{ inputs.token }}
