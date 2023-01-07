@@ -78,9 +78,7 @@ runs:
       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
 
   - name: Install pakages
-    run: |
-      rm -rf /opt/spack/lib/spack/external/macholib    
-      pip install pakages[all]
+    run: pip install pakages[all]
     shell: bash
 
   - name: ${{ inputs.package }} Spack Build
