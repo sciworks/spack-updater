@@ -48,8 +48,7 @@ runs:
       git clone --depth 1 https://github.com/spack/spack /opt/spack
       echo "/opt/spack/bin" >> $GITHUB_PATH
       export PATH="/opt/spack/bin:$PATH"
-      # disabled for now to test if causing errors
-      # spack external find     
+      spack external find     
     shell: bash
 
   - name: View Compilers
@@ -70,6 +69,8 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
+# Spack now provides clingo via a binary build cache.
+# Note from @vsoch - this particular setup caused many errors with subsequent package builds too
 #  - name: Clingo Cache
 #    uses: actions/cache@v3
 #    if: (inputs.disable_clingo_cache == 'false')
