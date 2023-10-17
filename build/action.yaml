@@ -87,15 +87,24 @@ runs:
       path: /opt/spack/opt/spack
       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
 
-  - name: Install pakages
-    run: pip install pakages[all]
-    shell: bash
-
+  # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
-    uses: syspack/pakages/action/install@main
-    with:
-      user: ${{ inputs.user }}
-      token: ${{ inputs.token }}
-      builder: spack
-      package: ${{ inputs.package }}
-      repo: .
+    shell: bash
+    run: |
+      SPACK_ROOT=$(dirname $(dirname $(which spack)))
+      echo "Found SPACK_ROOT ${SPACK_ROOT}"
+      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
+      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
+
+#  - name: Install pakages
+#    run: pip install pakages[all]
+#    shell: bash
+
+#  - name: ${{ inputs.package }} Spack Build
+#    uses: syspack/pakages/action/install@main
+#    with:
+#      user: ${{ inputs.user }}
+#      token: ${{ inputs.token }}
+#      builder: spack
+#      package: ${{ inputs.package }}
+#      repo: .
