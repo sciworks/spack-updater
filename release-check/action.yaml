@@ -142,6 +142,7 @@ runs:
       echo "Found SPACK_ROOT ${SPACK_ROOT}"
       echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
+      spack install ${{ inputs.package }}
 
  # - name: Install pakages
  #   if: steps.check.outputs.version != ''
