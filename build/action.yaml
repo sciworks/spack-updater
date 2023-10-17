@@ -1,9 +1,6 @@
 name: spack updater builder
 description: Build your spack packages
 inputs:
-  token:
-    description: GitHub token
-    required: true
   package:
     description: package to test
     required: true
