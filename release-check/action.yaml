@@ -134,20 +134,29 @@ runs:
       path: /opt/spack/opt/spack
       key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
 
-  - name: Install pakages
-    if: steps.check.outputs.version != ''
-    run: pip install pakages[all]
-    shell: bash
-
+  # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
-    uses: syspack/pakages/action/install@main
-    with:
-      user: ${{ github.actor }}
-      token: ${{ inputs.token }}
-      builder: spack
-      package: ${{ steps.check.outputs.package }}
-      repo: .
+    shell: bash
+    run: |
+      SPACK_ROOT=$(dirname $(dirname $(which spack)))
+      echo "Found SPACK_ROOT ${SPACK_ROOT}"
+      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
+      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
+
+ # - name: Install pakages
+ #   if: steps.check.outputs.version != ''
+ #   run: pip install pakages[all]
+ #   shell: bash
+
+ # - name: ${{ inputs.package }} Spack Build
+ #   if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
+ #   uses: syspack/pakages/action/install@main
+ #   with:
+ #     user: ${{ github.actor }}
+ #     token: ${{ inputs.token }}
+ #     builder: spack
+ #     package: ${{ steps.check.outputs.package }}
+ #     repo: .
 
   - name: Commit latest release version
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request
