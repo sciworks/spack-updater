@@ -4,9 +4,6 @@ inputs:
   token:
     description: GitHub token
     required: true
-  user:
-    description: GitHub actor
-    required: true
   package:
     description: package to test
     required: true
@@ -14,18 +11,6 @@ inputs:
     description: install fortran compiler
     required: false
     default: false
-  disable_cache:
-    description: explicitly disable the build cache
-    required: false
-    default: false
-  disable_clingo_cache:
-    description: explicitly disable the clingo build cache
-    required: false
-    default: false
-  cache_count:
-    description: cache counter (if you want to reset cache)
-    required: false
-    default: "1"
   compiler:
     description: set a default compiler (only used if fortran set)
     required: false
@@ -69,27 +54,7 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
-# Spack now provides clingo via a binary build cache.
-# Note from @vsoch - this particular setup caused many errors with subsequent package builds too
-#  - name: Clingo Cache
-#    uses: actions/cache@v3
-#    if: (inputs.disable_clingo_cache == 'false')
-#    with:
-#      path: /opt/spack/opt/spack
-#      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo-${{ inputs.cache_count }}
-
-#  - name: Install Clingo
-#    run: spack install clingo
-#    shell: bash
-
-#  - name: ${{ inputs.package }} Build Cache
-#    if: (inputs.disable_cache == 'false')
-#    uses: actions/cache@v3
-#    with:
-#      path: /opt/spack/opt/spack
-#      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
-
-  # Currently pakages is disabled debugging cache
+  # Currently pakages is disabled, taking this simpler approach
   - name: ${{ inputs.package }} Spack Build
     shell: bash
     run: |
@@ -99,16 +64,3 @@ runs:
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
       cat $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}/package.py
       spack install ${{ inputs.package }}
-
-#  - name: Install pakages
-#    run: pip install pakages[all]
-#    shell: bash
-
-#  - name: ${{ inputs.package }} Spack Build
-#    uses: syspack/pakages/action/install@main
-#    with:
-#      user: ${{ inputs.user }}
-#      token: ${{ inputs.token }}
-#      builder: spack
-#      package: ${{ inputs.package }}
-#      repo: .
