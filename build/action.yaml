@@ -97,6 +97,5 @@ runs:
       user: ${{ inputs.user }}
       token: ${{ inputs.token }}
       builder: spack
-      use_cache: ${{ inputs.disable_cache == 'false' }}
       package: ${{ inputs.package }}
       repo: .
