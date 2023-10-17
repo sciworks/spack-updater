@@ -4,6 +4,10 @@ inputs:
   package:
     description: package to test
     required: true
+  disable_cache:
+    description: disable the build cache for the package
+    required: false
+    default: false
   fortran:
     description: install fortran compiler
     required: false
@@ -50,6 +54,13 @@ runs:
       runner_cpu=$(archspec cpu)
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
+
+  - name: ${{ inputs.package }} Build Cache
+    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_cache == 'false')
+    uses: actions/cache@v3
+    with:
+      path: /opt/spack/opt/spack
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
 
   # Currently pakages is disabled, taking this simpler approach
   - name: ${{ inputs.package }} Spack Build
