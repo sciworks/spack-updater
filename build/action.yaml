@@ -70,23 +70,23 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
-  - name: Clingo Cache
-    uses: actions/cache@v3
-    if: (inputs.disable_clingo_cache == 'false')
-    with:
-      path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo-${{ inputs.cache_count }}
+#  - name: Clingo Cache
+#    uses: actions/cache@v3
+#    if: (inputs.disable_clingo_cache == 'false')
+#    with:
+#      path: /opt/spack/opt/spack
+#      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo-${{ inputs.cache_count }}
 
-  - name: Install Clingo
-    run: spack install clingo
-    shell: bash
+#  - name: Install Clingo
+#    run: spack install clingo
+#    shell: bash
 
-  - name: ${{ inputs.package }} Build Cache
-    if: (inputs.disable_cache == 'false')
-    uses: actions/cache@v3
-    with:
-      path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
+#  - name: ${{ inputs.package }} Build Cache
+#    if: (inputs.disable_cache == 'false')
+#    uses: actions/cache@v3
+#    with:
+#      path: /opt/spack/opt/spack
+#      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-${{ inputs.cache_count }}
 
   # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
