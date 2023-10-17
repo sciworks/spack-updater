@@ -5,7 +5,11 @@ inputs:
     description: GitHub token
     required: true
   disable_cache:
-    description: disable all caches
+    description: disable the build cache
+    required: false
+    default: false
+  disable_clingo_cache:
+    description: explicitly disable the clingo build cache
     required: false
     default: false
   test_build:
@@ -112,7 +116,7 @@ runs:
     shell: bash
 
   - name: Clingo Cache
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_cache == 'false')
+    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_clingo_cache == 'false')
     uses: actions/cache@v3
     with:
       path: /opt/spack/opt/spack
