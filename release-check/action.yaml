@@ -4,14 +4,6 @@ inputs:
   token:
     description: GitHub token
     required: true
-  disable_cache:
-    description: disable the build cache
-    required: false
-    default: false
-  disable_clingo_cache:
-    description: explicitly disable the clingo build cache
-    required: false
-    default: false
   test_build:
     description: test the build of the package
     required: false
@@ -115,25 +107,6 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
-  - name: Clingo Cache
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_clingo_cache == 'false')
-    uses: actions/cache@v3
-    with:
-      path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo
-
-  - name: Install Clingo
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
-    run: spack install clingo
-    shell: bash
-
-  - name: ${{ inputs.package }} Build Cache
-    if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_cache == 'false')
-    uses: actions/cache@v3
-    with:
-      path: /opt/spack/opt/spack
-      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}
-
   # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
     shell: bash
@@ -143,21 +116,6 @@ runs:
       echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
       spack install ${{ inputs.package }}
-
- # - name: Install pakages
- #   if: steps.check.outputs.version != ''
- #   run: pip install pakages[all]
- #   shell: bash
-
- # - name: ${{ inputs.package }} Spack Build
- #   if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
- #   uses: syspack/pakages/action/install@main
- #   with:
- #     user: ${{ github.actor }}
- #     token: ${{ inputs.token }}
- #     builder: spack
- #     package: ${{ steps.check.outputs.package }}
- #     repo: .
 
   - name: Commit latest release version
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request
