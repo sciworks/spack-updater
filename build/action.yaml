@@ -15,7 +15,11 @@ inputs:
     required: false
     default: false
   disable_cache:
-    description: explicitly disable the cache
+    description: explicitly disable the build cache
+    required: false
+    default: false
+  disable_clingo_cache:
+    description: explicitly disable the clingo build cache
     required: false
     default: false
   cache_count:
@@ -67,7 +71,7 @@ runs:
 
   - name: Clingo Cache
     uses: actions/cache@v3
-    if: (inputs.disable_cache == 'false')
+    if: (inputs.disable_clingo_cache == 'false')
     with:
       path: /opt/spack/opt/spack
       key: ${{ runner.os }}-${{ env.runner_cpu }}-clingo-${{ inputs.cache_count }}
