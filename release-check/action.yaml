@@ -151,7 +151,7 @@ runs:
 
   - name: Open Pull Request
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request == 'true')
-    uses: vsoch/pull-request-action@c8e84cea4c91c3379be16bc011c195edd3abbb2d # 1.0.23
+    uses: vsoch/pull-request-action@master
     env:
       GITHUB_TOKEN: ${{ inputs.token }}
       PULL_REQUEST_BRANCH: ${{ inputs.branch }}

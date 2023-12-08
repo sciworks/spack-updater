@@ -84,7 +84,7 @@ runs:
 
     - name: Open Pull Request
       if: ${{ env.open_pr_to_here != '' }}
-      uses: vsoch/pull-request-action@1.0.19
+      uses: vsoch/pull-request-action@master
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         PULL_REQUEST_BRANCH: ${{ inputs.local_branch }}
