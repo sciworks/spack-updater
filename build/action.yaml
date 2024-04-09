@@ -57,6 +57,8 @@ runs:
 
   - name: Add libsodium build cache
     run: |
+      spack gpg init
+      spack gpg create github-actions github-actions@users.noreply.github.com 
       spack install libsodium
       spack buildcache push ./spack-cache-libsodium libsodium
       spack buildcache update-index ./spack-cache-libsodium
