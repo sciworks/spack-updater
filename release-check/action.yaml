@@ -107,6 +107,20 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
+  - name: Add libsodium build cache
+    run: |
+      spack install libsodium
+      spack buildcache push ./spack-cache-libsodium libsodium
+      spack buildcache update-index ./spack-cache-libsodium
+      spack buildcache list
+    shell: bash
+
+  - name: ${{ inputs.package }} Libsodium Build Cache
+    uses: actions/cache@v3
+    with:
+      path: ./spack-cache-libsodium
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-libsodium
+
   # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
     shell: bash
