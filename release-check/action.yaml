@@ -103,6 +103,7 @@ runs:
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true')
     run: |
       pip install archspec
+      pip install setuptools || true
       runner_cpu=$(archspec cpu)
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
