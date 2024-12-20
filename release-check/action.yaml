@@ -85,7 +85,7 @@ runs:
       git clone --depth 1 https://github.com/spack/spack /opt/spack
       echo "/opt/spack/bin" >> $GITHUB_PATH
       export PATH="/opt/spack/bin:$PATH"
-      spack external find
+      # spack external find
     shell: bash
 
   - name: View Compilers
