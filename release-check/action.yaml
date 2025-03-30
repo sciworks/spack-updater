@@ -96,7 +96,6 @@ runs:
       spack config add "packages:all:compiler:[${compiler}]"
       spack compiler find
       spack compiler list
-      cat ~/.spack/linux/compilers.yaml
     shell: bash
     
   - name: Derive Microarchitecture
