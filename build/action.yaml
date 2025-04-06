@@ -71,3 +71,12 @@ runs:
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
       cat $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}/package.py
       spack install ${{ inputs.package }}
+      
+  - name: Upload artifacts
+    uses: actions/upload-artifact@v3
+    if: failure()
+    with: ${{ inputs.package }}-artifact
+      name: artifacts
+      path: /tmp/runner/spack-stage
+      if-no-files-found: error
+      retention-days: 90
