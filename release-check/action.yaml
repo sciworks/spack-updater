@@ -109,6 +109,7 @@ runs:
 
   # Currently pakages is disabled debugging cache
   - name: ${{ inputs.package }} Spack Build
+    if: (inputs.test_build == 'true' || inputs.test_build == true)
     shell: bash
     run: |
       SPACK_ROOT=$(dirname $(dirname $(which spack)))
