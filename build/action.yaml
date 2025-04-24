@@ -54,6 +54,22 @@ runs:
       echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
     shell: bash
 
+  - name: Add libsodium build cache
+    run: |
+      spack gpg init
+      spack gpg create github-actions github-actions@users.noreply.github.com 
+      spack install libsodium
+      spack buildcache push ./spack-cache-libsodium libsodium
+      spack buildcache update-index ./spack-cache-libsodium
+      spack buildcache list
+    shell: bash
+
+  - name: ${{ inputs.package }} Libsodium Build Cache
+    uses: actions/cache@v3
+    with:
+      path: ./spack-cache-libsodium
+      key: ${{ runner.os }}-${{ env.runner_cpu }}-${{ inputs.package }}-libsodium
+
   - name: ${{ inputs.package }} Build Cache
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.disable_cache == 'false')
     uses: actions/cache@v3
