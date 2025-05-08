@@ -68,6 +68,9 @@ runs:
       SPACK_ROOT=$(dirname $(dirname $(which spack)))
       echo "Found SPACK_ROOT ${SPACK_ROOT}"
       echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
+      ls $SPACK_ROOT
+      apt-get update && apt-get install -y tree
+      tree -L 5 $SPACK_ROOT
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
       cat $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}/package.py
       spack install ${{ inputs.package }}
