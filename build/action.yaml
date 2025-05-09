@@ -71,6 +71,6 @@ runs:
       ls $SPACK_ROOT
       apt-get update && apt-get install -y tree
       tree -L 5 $SPACK_ROOT
-      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
-      cat $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}/package.py
+      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}
+      cat $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}/package.py
       spack install ${{ inputs.package }}
