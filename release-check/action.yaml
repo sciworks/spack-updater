@@ -114,8 +114,8 @@ runs:
     run: |
       SPACK_ROOT=$(dirname $(dirname $(which spack)))
       echo "Found SPACK_ROOT ${SPACK_ROOT}"
-      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}"
-      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/builtin/packages/${{ inputs.package }}
+      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}"
+      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}
       spack install ${{ inputs.package }}
 
   - name: Commit latest release version
