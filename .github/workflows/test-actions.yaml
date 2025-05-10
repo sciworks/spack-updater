@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Look for ${{ matrix.package[0] }} updates
         uses: ./release-check
