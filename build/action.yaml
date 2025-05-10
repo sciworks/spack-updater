@@ -51,7 +51,16 @@ runs:
     run: |
       pip install archspec
       runner_cpu=$(archspec cpu)
-      echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV
+      echo "runner_cpu=${runner_cpu}" >> $GITHUB_ENV      
+    shell: bash
+
+  - name: Derive Package Install Name
+    env:
+      package: ${{ inputs.package }}
+    run: |
+      package_name="${package/-/_}"
+      echo "Package install name is $package_name"
+      echo "package_install_name=${package_name}" >> $GITHUB_ENV      
     shell: bash
 
   - name: ${{ inputs.package }} Build Cache
@@ -70,4 +79,4 @@ runs:
       echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}"
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}
       cat $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}/package.py
-      spack install ${{ inputs.package }}
+      spack install ${{ env.package_install_name }}
