@@ -112,8 +112,8 @@ runs:
       package: ${{ inputs.package }}
     run: |
       package_name="${package/-/_}"
-      echo "Package install name is $package_name"
-      echo "package_install_name=${package_name}" >> $GITHUB_ENV      
+      echo "Package spack path is $package_name"
+      echo "package_name=${package_name}" >> $GITHUB_ENV      
     shell: bash
 
   # Currently pakages is disabled debugging cache
@@ -123,9 +123,9 @@ runs:
     run: |
       SPACK_ROOT=$(dirname $(dirname $(which spack)))
       echo "Found SPACK_ROOT ${SPACK_ROOT}"
-      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}"
-      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ inputs.package }}
-      spack install ${{ env.package_install_name }}
+      echo "cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ env.package_name }}"
+      cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ env.package_name }}
+      spack install ${{ inputs.package }}
 
   - name: Commit latest release version
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request
