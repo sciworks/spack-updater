@@ -27,8 +27,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        package: [[alan, mpdunne/alan],
-                  [openslide, ""]]
+        package: [[alan, mpdunne/alan]]
 
     steps:
       - name: Checkout Repository
