@@ -127,6 +127,15 @@ runs:
       cp ./packages/${{ inputs.package }}/* $SPACK_ROOT/var/spack/repos/spack_repo/builtin/packages/${{ env.package_name }}
       spack install ${{ inputs.package }}
 
+  - name: Upload artifacts
+    uses: actions/upload-artifact@v3
+    if: failure()
+    with: ${{ inputs.package }}-artifact
+      name: artifacts
+      path: /tmp/runner/spack-stage
+      if-no-files-found: error
+      retention-days: 90
+
   - name: Commit latest release version
     if: (steps.check.outputs.version != '' && inputs.test_build == 'true' && inputs.pull_request
       == 'true')
